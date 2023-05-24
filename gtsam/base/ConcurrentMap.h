@@ -24,20 +24,16 @@
 #ifdef GTSAM_USE_TBB
 
 // Include TBB header
-#  include <tbb/concurrent_unordered_map.h>
-#  undef min // TBB seems to include Windows.h which defines these macros that cause problems
-#  undef max
-#  undef ERROR
+#include <tbb/concurrent_unordered_map.h>
+#undef min  // TBB seems to include Windows.h which defines these macros that cause problems
+#undef max
+#undef ERROR
 
-#include <functional> // std::hash()
+#include <functional>  // std::hash()
 
 // Use TBB concurrent_unordered_map for ConcurrentMap
 template <typename KEY, typename VALUE>
-using ConcurrentMapBase = tbb::concurrent_unordered_map<
-  KEY,
-  VALUE,
-  std::hash<KEY>
-  >;
+using ConcurrentMapBase = tbb::concurrent_unordered_map<KEY, VALUE, std::hash<KEY> >;
 
 #else
 
@@ -54,7 +50,8 @@ using ConcurrentMapBase = gtsam::FastMap<KEY, VALUE>;
 
 #include <gtsam/base/FastVector.h>
 
-namespace gtsam {
+namespace gtsam
+{
 
 /**
  * FastMap is a thin wrapper around std::map that uses the boost
@@ -64,62 +61,84 @@ namespace gtsam {
  * percent.
  * @ingroup base
  */
-template<typename KEY, typename VALUE>
-class ConcurrentMap : public ConcurrentMapBase<KEY,VALUE> {
-
+template <typename KEY, typename VALUE>
+class ConcurrentMap : public ConcurrentMapBase<KEY, VALUE>
+{
 public:
+    typedef ConcurrentMapBase<KEY, VALUE> Base;
 
-  typedef ConcurrentMapBase<KEY,VALUE> Base;
+    /** Default constructor */
+    ConcurrentMap()
+    {
+    }
 
-  /** Default constructor */
-  ConcurrentMap() {}
+    /** Constructor from a range, passes through to base class */
+    template <typename INPUTITERATOR>
+    ConcurrentMap(INPUTITERATOR first, INPUTITERATOR last) : Base(first, last)
+    {
+    }
 
-  /** Constructor from a range, passes through to base class */
-  template<typename INPUTITERATOR>
-  ConcurrentMap(INPUTITERATOR first, INPUTITERATOR last) : Base(first, last) {}
+    /** Copy constructor from another ConcurrentMap */
+    ConcurrentMap(const ConcurrentMap<KEY, VALUE>& x) : Base(x)
+    {
+    }
 
-  /** Copy constructor from another ConcurrentMap */
-  ConcurrentMap(const ConcurrentMap<KEY,VALUE>& x) : Base(x) {}
+    /** Copy constructor from the base map class */
+    ConcurrentMap(const Base& x) : Base(x)
+    {
+    }
 
-  /** Copy constructor from the base map class */
-  ConcurrentMap(const Base& x) : Base(x) {}
-
-  /** Handy 'exists' function */
-  bool exists(const KEY& e) const { return this->count(e); }
+    /** Handy 'exists' function */
+    bool exists(const KEY& e) const
+    {
+        return this->count(e);
+    }
 
 #ifndef GTSAM_USE_TBB
-  // If we're not using TBB and this is actually a FastMap, we need to add these functions and hide
-  // the original erase functions.
-  void unsafe_erase(typename Base::iterator position) { ((Base*)this)->erase(position); }
-  typename Base::size_type unsafe_erase(const KEY& k) { return ((Base*)this)->erase(k); }
-  void unsafe_erase(typename Base::iterator first, typename Base::iterator last) {
-    return ((Base*)this)->erase(first, last); }
+    // If we're not using TBB and this is actually a FastMap, we need to add these functions and hide
+    // the original erase functions.
+    void unsafe_erase(typename Base::iterator position)
+    {
+        ((Base*)this)->erase(position);
+    }
+    typename Base::size_type unsafe_erase(const KEY& k)
+    {
+        return ((Base*)this)->erase(k);
+    }
+    void unsafe_erase(typename Base::iterator first, typename Base::iterator last)
+    {
+        return ((Base*)this)->erase(first, last);
+    }
+
 private:
-  void erase() {}
+    void erase()
+    {
+    }
+
 public:
 #endif
 
 private:
-  /** Serialization function */
-  friend class boost::serialization::access;
-  template<class Archive>
-  void save(Archive& ar, const unsigned int /*version*/) const
-  {
-    // Copy to an STL container and serialize that
-    FastVector<std::pair<KEY, VALUE> > map(this->size());
-    std::copy(this->begin(), this->end(), map.begin());
-    ar & BOOST_SERIALIZATION_NVP(map);
-  }
-  template<class Archive>
-  void load(Archive& ar, const unsigned int /*version*/)
-  {
-    this->clear();
-    // Load into STL container and then fill our map
-    FastVector<std::pair<KEY, VALUE> > map;
-    ar & BOOST_SERIALIZATION_NVP(map);
-    this->insert(map.begin(), map.end());
-  }
-  BOOST_SERIALIZATION_SPLIT_MEMBER()
+    /** Serialization function */
+    friend class boost::serialization::access;
+    template <class Archive>
+    void save(Archive& ar, const unsigned int /*version*/) const
+    {
+        // Copy to an STL container and serialize that
+        FastVector<std::pair<KEY, VALUE> > map(this->size());
+        std::copy(this->begin(), this->end(), map.begin());
+        ar& BOOST_SERIALIZATION_NVP(map);
+    }
+    template <class Archive>
+    void load(Archive& ar, const unsigned int /*version*/)
+    {
+        this->clear();
+        // Load into STL container and then fill our map
+        FastVector<std::pair<KEY, VALUE> > map;
+        ar&                                BOOST_SERIALIZATION_NVP(map);
+        this->insert(map.begin(), map.end());
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
-}
+}  // namespace gtsam

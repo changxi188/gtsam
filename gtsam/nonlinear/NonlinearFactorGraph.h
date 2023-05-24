@@ -22,79 +22,89 @@
 #pragma once
 
 #include <gtsam/geometry/Point2.h>
-#include <gtsam/nonlinear/NonlinearFactor.h>
-#include <gtsam/nonlinear/GraphvizFormatting.h>
 #include <gtsam/inference/FactorGraph.h>
+#include <gtsam/nonlinear/GraphvizFormatting.h>
+#include <gtsam/nonlinear/NonlinearFactor.h>
 #include <gtsam/nonlinear/PriorFactor.h>
 
 #include <boost/shared_ptr.hpp>
 #include <functional>
 
-namespace gtsam {
+namespace gtsam
+{
 
-  // Forward declarations
-  class Values;
-  class Ordering;
-  class GaussianFactorGraph;
-  class SymbolicFactorGraph;
-  template<typename T>
-  class Expression;
-  template<typename T>
-  class ExpressionFactor;
+// Forward declarations
+class Values;
+class Ordering;
+class GaussianFactorGraph;
+class SymbolicFactorGraph;
+template <typename T>
+class Expression;
+template <typename T>
+class ExpressionFactor;
 
-  /**
-   * A NonlinearFactorGraph is a graph of non-Gaussian, i.e. non-linear factors,
-   * which derive from NonlinearFactor. The values structures are typically (in
-   * SAM) more general than just vectors, e.g., Rot3 or Pose3, which are objects
-   * in non-linear manifolds. Linearizing the non-linear factor graph creates a
-   * linear factor graph on the tangent vector space at the linearization point.
-   * Because the tangent space is a true vector space, the config type will be
-   * an VectorValues in that linearized factor graph.
-   * @addtogroup nonlinear
-   */
-  class GTSAM_EXPORT NonlinearFactorGraph: public FactorGraph<NonlinearFactor> {
-
-  public:
-
+/**
+ * A NonlinearFactorGraph is a graph of non-Gaussian, i.e. non-linear factors,
+ * which derive from NonlinearFactor. The values structures are typically (in
+ * SAM) more general than just vectors, e.g., Rot3 or Pose3, which are objects
+ * in non-linear manifolds. Linearizing the non-linear factor graph creates a
+ * linear factor graph on the tangent vector space at the linearization point.
+ * Because the tangent space is a true vector space, the config type will be
+ * an VectorValues in that linearized factor graph.
+ * @addtogroup nonlinear
+ */
+class GTSAM_EXPORT NonlinearFactorGraph : public FactorGraph<NonlinearFactor>
+{
+public:
     typedef FactorGraph<NonlinearFactor> Base;
-    typedef NonlinearFactorGraph This;
-    typedef boost::shared_ptr<This> shared_ptr;
+    typedef NonlinearFactorGraph         This;
+    typedef boost::shared_ptr<This>      shared_ptr;
 
     /// @name Standard Constructors
     /// @{
 
     /** Default constructor */
-    NonlinearFactorGraph() {}
+    NonlinearFactorGraph()
+    {
+    }
 
     /** Construct from iterator over factors */
-    template<typename ITERATOR>
-    NonlinearFactorGraph(ITERATOR firstFactor, ITERATOR lastFactor) : Base(firstFactor, lastFactor) {}
+    template <typename ITERATOR>
+    NonlinearFactorGraph(ITERATOR firstFactor, ITERATOR lastFactor) : Base(firstFactor, lastFactor)
+    {
+    }
 
     /** Construct from container of factors (shared_ptr or plain objects) */
-    template<class CONTAINER>
-    explicit NonlinearFactorGraph(const CONTAINER& factors) : Base(factors) {}
+    template <class CONTAINER>
+    explicit NonlinearFactorGraph(const CONTAINER& factors) : Base(factors)
+    {
+    }
 
     /** Implicit copy/downcast constructor to override explicit template container constructor */
-    template<class DERIVEDFACTOR>
-    NonlinearFactorGraph(const FactorGraph<DERIVEDFACTOR>& graph) : Base(graph) {}
+    template <class DERIVEDFACTOR>
+    NonlinearFactorGraph(const FactorGraph<DERIVEDFACTOR>& graph) : Base(graph)
+    {
+    }
 
     /// Destructor
-    virtual ~NonlinearFactorGraph() {}
+    virtual ~NonlinearFactorGraph()
+    {
+    }
 
     /// @}
     /// @name Testable
     /// @{
 
     /** print */
-    void print(
-        const std::string& str = "NonlinearFactorGraph: ",
-        const KeyFormatter& keyFormatter = DefaultKeyFormatter) const override;
+    void print(const std::string&  str          = "NonlinearFactorGraph: ",
+               const KeyFormatter& keyFormatter = DefaultKeyFormatter) const override;
 
     /** print errors along with factors*/
-    void printErrors(const Values& values, const std::string& str = "NonlinearFactorGraph: ",
-      const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-      const std::function<bool(const Factor* /*factor*/, double /*whitenedError*/, size_t /*index*/)>&
-        printCondition = [](const Factor *,double, size_t) {return true;}) const;
+    void printErrors(
+        const Values&      values,
+        const std::string& str = "NonlinearFactorGraph: ", const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+        const std::function<bool(const Factor* /*factor*/, double /*whitenedError*/, size_t /*index*/)>&
+            printCondition = [](const Factor*, double, size_t) { return true; }) const;
 
     /** Test equality */
     bool equals(const NonlinearFactorGraph& other, double tol = 1e-9) const;
@@ -142,8 +152,8 @@ namespace gtsam {
      * An optional lambda function can be used to apply damping on the filled Hessian.
      * No parallelism is exploited, because all the factors write in the same memory.
      */
-    boost::shared_ptr<HessianFactor> linearizeToHessianFactor(
-        const Values& values, const Dampen& dampen = nullptr) const;
+    boost::shared_ptr<HessianFactor> linearizeToHessianFactor(const Values& values,
+                                                              const Dampen& dampen = nullptr) const;
 
     /**
      * Instead of producing a GaussianFactorGraph, pre-allocate and linearize directly
@@ -153,18 +163,16 @@ namespace gtsam {
      * An optional lambda function can be used to apply damping on the filled Hessian.
      * No parallelism is exploited, because all the factors write in the same memory.
      */
-    boost::shared_ptr<HessianFactor> linearizeToHessianFactor(
-        const Values& values, const Ordering& ordering, const Dampen& dampen = nullptr) const;
+    boost::shared_ptr<HessianFactor> linearizeToHessianFactor(const Values& values, const Ordering& ordering,
+                                                              const Dampen& dampen = nullptr) const;
 
     /// Linearize and solve in one pass.
     /// Calls linearizeToHessianFactor, densely solves the normal equations, and updates the values.
-    Values updateCholesky(const Values& values,
-                          const Dampen& dampen = nullptr) const;
+    Values updateCholesky(const Values& values, const Dampen& dampen = nullptr) const;
 
     /// Linearize and solve in one pass.
     /// Calls linearizeToHessianFactor, densely solves the normal equations, and updates the values.
-    Values updateCholesky(const Values& values, const Ordering& ordering,
-                          const Dampen& dampen = nullptr) const;
+    Values updateCholesky(const Values& values, const Ordering& ordering, const Dampen& dampen = nullptr) const;
 
     /// Clone() performs a deep-copy of the graph, including all of the factors
     NonlinearFactorGraph clone() const;
@@ -178,7 +186,7 @@ namespace gtsam {
      * @param rekey_mapping is a map of old->new keys
      * @result a cloned graph with updated keys
      */
-    NonlinearFactorGraph rekey(const std::map<Key,Key>& rekey_mapping) const;
+    NonlinearFactorGraph rekey(const std::map<Key, Key>& rekey_mapping) const;
 
     /**
      * Directly add ExpressionFactor that implements |h(x)-z|^2_R
@@ -186,10 +194,10 @@ namespace gtsam {
      * @param z measurement
      * @param R model
      */
-    template<typename T>
-    void addExpressionFactor(const SharedNoiseModel& R, const T& z,
-                             const Expression<T>& h) {
-      push_back(boost::make_shared<ExpressionFactor<T> >(R, z, h));
+    template <typename T>
+    void addExpressionFactor(const SharedNoiseModel& R, const T& z, const Expression<T>& h)
+    {
+        push_back(boost::make_shared<ExpressionFactor<T>>(R, z, h));
     }
 
     /**
@@ -198,10 +206,10 @@ namespace gtsam {
      * @param prior  The variable's prior value
      * @param model  Noise model for prior factor
      */
-    template<typename T>
-    void addPrior(Key key, const T& prior,
-                  const SharedNoiseModel& model = nullptr) {
-      emplace_shared<PriorFactor<T>>(key, prior, model);
+    template <typename T>
+    void addPrior(Key key, const T& prior, const SharedNoiseModel& model = nullptr)
+    {
+        emplace_shared<PriorFactor<T>>(key, prior, model);
     }
 
     /**
@@ -209,14 +217,15 @@ namespace gtsam {
      * @param key         Variable key
      * @param prior       The variable's prior value
      * @param covariance  Covariance matrix.
-     * 
+     *
      * Note that the smart noise model associated with the prior factor
      * automatically picks the right noise model (e.g. a diagonal noise model
      * if the provided covariance matrix is diagonal).
      */
-    template<typename T>
-    void addPrior(Key key, const T& prior, const Matrix& covariance) {
-      emplace_shared<PriorFactor<T>>(key, prior, covariance);
+    template <typename T>
+    void addPrior(Key key, const T& prior, const Matrix& covariance)
+    {
+        emplace_shared<PriorFactor<T>>(key, prior, covariance);
     }
 
     /// @}
@@ -227,78 +236,74 @@ namespace gtsam {
     using FactorGraph::saveGraph;
 
     /// Output to graphviz format, stream version, with Values/extra options.
-    void dot(std::ostream& os, const Values& values,
-             const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+    void dot(std::ostream& os, const Values& values, const KeyFormatter& keyFormatter = DefaultKeyFormatter,
              const GraphvizFormatting& writer = GraphvizFormatting()) const;
 
     /// Output to graphviz format string, with Values/extra options.
-    std::string dot(
-        const Values& values,
-        const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-        const GraphvizFormatting& writer = GraphvizFormatting()) const;
+    std::string dot(const Values& values, const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+                    const GraphvizFormatting& writer = GraphvizFormatting()) const;
 
     /// output to file with graphviz format, with Values/extra options.
-    void saveGraph(
-        const std::string& filename, const Values& values,
-        const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-        const GraphvizFormatting& writer = GraphvizFormatting()) const;
+    void saveGraph(const std::string& filename, const Values& values,
+                   const KeyFormatter&       keyFormatter = DefaultKeyFormatter,
+                   const GraphvizFormatting& writer       = GraphvizFormatting()) const;
     /// @}
 
-   private:
-
+private:
     /**
      * Linearize from Scatter rather than from Ordering.  Made private because
      *  it doesn't include gttic.
      */
-    boost::shared_ptr<HessianFactor> linearizeToHessianFactor(
-        const Values& values, const Scatter& scatter, const Dampen& dampen = nullptr) const;
+    boost::shared_ptr<HessianFactor> linearizeToHessianFactor(const Values& values, const Scatter& scatter,
+                                                              const Dampen& dampen = nullptr) const;
 
     /** Serialization function */
     friend class boost::serialization::access;
-    template<class ARCHIVE>
-    void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-      ar & boost::serialization::make_nvp("NonlinearFactorGraph",
-                boost::serialization::base_object<Base>(*this));
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        ar& boost::serialization::make_nvp("NonlinearFactorGraph", boost::serialization::base_object<Base>(*this));
     }
 
-  public:
-
+public:
 #ifdef GTSAM_ALLOW_DEPRECATED_SINCE_V42
     /// @name Deprecated
     /// @{
     /** @deprecated */
-    boost::shared_ptr<HessianFactor> GTSAM_DEPRECATED linearizeToHessianFactor(
-        const Values& values, boost::none_t, const Dampen& dampen = nullptr) const
-      {return linearizeToHessianFactor(values, dampen);}
+    boost::shared_ptr<HessianFactor> GTSAM_DEPRECATED linearizeToHessianFactor(const Values& values, boost::none_t,
+                                                                               const Dampen& dampen = nullptr) const
+    {
+        return linearizeToHessianFactor(values, dampen);
+    }
 
     /** @deprecated */
-    Values GTSAM_DEPRECATED updateCholesky(const Values& values, boost::none_t,
-                          const Dampen& dampen = nullptr) const
-      {return updateCholesky(values, dampen);}
+    Values GTSAM_DEPRECATED updateCholesky(const Values& values, boost::none_t, const Dampen& dampen = nullptr) const
+    {
+        return updateCholesky(values, dampen);
+    }
 
     /** @deprecated */
-    void GTSAM_DEPRECATED saveGraph(
-        std::ostream& os, const Values& values = Values(),
-        const GraphvizFormatting& graphvizFormatting = GraphvizFormatting(),
-        const KeyFormatter& keyFormatter = DefaultKeyFormatter) const {
-      dot(os, values, keyFormatter, graphvizFormatting);
+    void GTSAM_DEPRECATED saveGraph(std::ostream& os, const Values& values = Values(),
+                                    const GraphvizFormatting& graphvizFormatting = GraphvizFormatting(),
+                                    const KeyFormatter&       keyFormatter       = DefaultKeyFormatter) const
+    {
+        dot(os, values, keyFormatter, graphvizFormatting);
     }
     /** @deprecated */
-    void GTSAM_DEPRECATED
-    saveGraph(const std::string& filename, const Values& values,
-              const GraphvizFormatting& graphvizFormatting,
-              const KeyFormatter& keyFormatter = DefaultKeyFormatter) const {
-      saveGraph(filename, values, keyFormatter, graphvizFormatting);
+    void GTSAM_DEPRECATED saveGraph(const std::string& filename, const Values& values,
+                                    const GraphvizFormatting& graphvizFormatting,
+                                    const KeyFormatter&       keyFormatter = DefaultKeyFormatter) const
+    {
+        saveGraph(filename, values, keyFormatter, graphvizFormatting);
     }
     /// @}
 #endif
-
-  };
-
-/// traits
-template<>
-struct traits<NonlinearFactorGraph> : public Testable<NonlinearFactorGraph> {
 };
 
-} //\ namespace gtsam
+/// traits
+template <>
+struct traits<NonlinearFactorGraph> : public Testable<NonlinearFactorGraph>
+{
+};
 
+}  // namespace gtsam

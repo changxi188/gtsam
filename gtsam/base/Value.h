@@ -18,26 +18,29 @@
 
 #pragma once
 
-#include <gtsam/config.h>      // Configuration from CMake
+#include <gtsam/config.h>  // Configuration from CMake
 
 #include <gtsam/base/Vector.h>
-#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/assume_abstract.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <memory>
 
-namespace gtsam {
+namespace gtsam
+{
 
-  /**
-   * This is the base class for any type to be stored in Values.
-   * Note: As of GTSAM 4.0, Value types should no longer derive from Value or
-   * DerivedValue. Use type traits instead.
-   * See https://bitbucket.org/gtborg/gtsam/wiki/Migrating%20from%20GTSAM%203.X%20to%20GTSAM%204.0#markdown-header-custom-value-types
-   * for current usage and migration details.
-   */
-  class GTSAM_EXPORT Value {
-  public:
-
-    /** Clone this value in a special memory pool, must be deleted with Value::deallocate_, *not* with the 'delete' operator. */
+/**
+ * This is the base class for any type to be stored in Values.
+ * Note: As of GTSAM 4.0, Value types should no longer derive from Value or
+ * DerivedValue. Use type traits instead.
+ * See
+ * https://bitbucket.org/gtborg/gtsam/wiki/Migrating%20from%20GTSAM%203.X%20to%20GTSAM%204.0#markdown-header-custom-value-types
+ * for current usage and migration details.
+ */
+class GTSAM_EXPORT Value
+{
+public:
+    /** Clone this value in a special memory pool, must be deleted with Value::deallocate_, *not* with the 'delete'
+     * operator. */
     virtual Value* clone_() const = 0;
 
     /** Deallocate a raw pointer of this value */
@@ -76,19 +79,22 @@ namespace gtsam {
     virtual Vector localCoordinates_(const Value& value) const = 0;
 
     /** Assignment operator */
-    virtual Value& operator=(const Value& /*rhs*/) {
-      //needs a empty definition so recursion in implicit derived assignment operators work
-     return *this;
+    virtual Value& operator=(const Value& /*rhs*/)
+    {
+        // needs a empty definition so recursion in implicit derived assignment operators work
+        return *this;
     }
 
     /** Cast to known ValueType */
-    template<typename ValueType>
+    template <typename ValueType>
     const ValueType& cast() const;
 
     /** Virutal destructor */
-    virtual ~Value() {}
+    virtual ~Value()
+    {
+    }
 
-  private:
+private:
     /** Empty serialization function.
      *
      * There are two important things that users need to do to serialize derived objects in Values successfully:
@@ -120,11 +126,11 @@ namespace gtsam {
      *       any of the archive class headers.
      * */
     friend class boost::serialization::access;
-    template<class ARCHIVE>
-    void serialize(ARCHIVE & /*ar*/, const unsigned int /*version*/) {
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& /*ar*/, const unsigned int /*version*/)
+    {
     }
-
-  };
+};
 
 } /* namespace gtsam */
 

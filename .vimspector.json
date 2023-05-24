@@ -1,17 +1,22 @@
 {
-  "configurations": {
-    "Launch": {
-      "adapter": "vscode-cpptools",
-      "filetypes": [ "cpp", "c", "objc", "rust" ], 
-      "configuration": {
-        "request": "launch",
-        "program": "${workspaceRoot}/build/examples/ImuFactorsExample",
-        "args": [],
-        "cwd": "${workspaceRoot}",
-        "environment": [],
-        "externalConsole": true,
-        "MIMode": "gdb"
-      }
+    "configurations": {
+        "Launch": {
+            "adapter": "vscode-cpptools",
+            "filetypes": [
+                "cpp",
+                "c",
+                "objc",
+                "rust"
+            ],
+            "configuration": {
+                "request": "launch",
+                "program": "${workspaceRoot}/build/examples/VisualISAM2Example",
+                "args": [],
+                "cwd": "${workspaceRoot}",
+                "environment": [],
+                "externalConsole": true,
+                "MIMode": "gdb"
+            }
+        }
     }
-  }
 }

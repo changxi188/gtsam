@@ -22,57 +22,65 @@
 #include <boost/format.hpp>
 
 #include <limits.h>
-#include <list>
 #include <iostream>
+#include <list>
 
-namespace gtsam {
+namespace gtsam
+{
 
-static const size_t keyBits = sizeof(Key) * 8;
-static const size_t chrBits = sizeof(unsigned char) * 8;
+static const size_t keyBits   = sizeof(Key) * 8;
+static const size_t chrBits   = sizeof(unsigned char) * 8;
 static const size_t indexBits = keyBits - chrBits;
-static const Key chrMask = Key(UCHAR_MAX)  << indexBits; // For some reason, std::numeric_limits<unsigned char>::max() fails
+static const Key    chrMask   = Key(UCHAR_MAX)
+                           << indexBits;  // For some reason, std::numeric_limits<unsigned char>::max() fails
 static const Key indexMask = ~chrMask;
 
-Symbol::Symbol(Key key) :
-  c_((unsigned char) ((key & chrMask) >> indexBits)),
-  j_ (key & indexMask) {
+Symbol::Symbol(Key key) : c_((unsigned char)((key & chrMask) >> indexBits)), j_(key & indexMask)
+{
 }
 
-Key Symbol::key() const {
-  if (j_ > indexMask) {
-    boost::format msg("Symbol index is too large, j=%d, indexMask=%d");
-    msg % j_ % indexMask;
-    throw std::invalid_argument(msg.str());
-  }
-  Key key = (Key(c_) << indexBits) | j_;
-  return key;
+Key Symbol::key() const
+{
+    if (j_ > indexMask)
+    {
+        boost::format msg("Symbol index is too large, j=%d, indexMask=%d");
+        msg % j_ % indexMask;
+        throw std::invalid_argument(msg.str());
+    }
+    Key key = (Key(c_) << indexBits) | j_;
+    return key;
 }
 
-void Symbol::print(const std::string& s) const {
-  std::cout << s << (std::string) (*this) << std::endl;
+void Symbol::print(const std::string& s) const
+{
+    std::cout << s << (std::string)(*this) << std::endl;
 }
 
-bool Symbol::equals(const Symbol& expected, double tol) const {
-  return (*this) == expected;
+bool Symbol::equals(const Symbol& expected, double tol) const
+{
+    return (*this) == expected;
 }
 
-Symbol::operator std::string() const {
-  return str(boost::format("%c%d") % c_ % j_);
+Symbol::operator std::string() const
+{
+    return str(boost::format("%c%d") % c_ % j_);
 }
 
-static Symbol make(gtsam::Key key) { return Symbol(key);}
-
-std::function<bool(Key)> Symbol::ChrTest(unsigned char c) {
-  auto equals = [](unsigned char s, unsigned char c) { return s == c; };
-  return std::bind(
-      equals, std::bind(&Symbol::chr, std::bind(make, std::placeholders::_1)),
-      c);
+static Symbol make(gtsam::Key key)
+{
+    return Symbol(key);
 }
 
-GTSAM_EXPORT std::ostream &operator<<(std::ostream &os, const Symbol &symbol) {
-  os << StreamedKey(symbol);
-  return os;
+std::function<bool(Key)> Symbol::ChrTest(unsigned char c)
+{
+    auto equals = [](unsigned char s, unsigned char c) { return s == c; };
+    return std::bind(equals, std::bind(&Symbol::chr, std::bind(make, std::placeholders::_1)), c);
 }
 
-} // namespace gtsam
+GTSAM_EXPORT std::ostream& operator<<(std::ostream& os, const Symbol& symbol)
+{
+    os << StreamedKey(symbol);
+    return os;
+}
 
+}  // namespace gtsam
