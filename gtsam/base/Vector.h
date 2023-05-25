@@ -30,8 +30,8 @@
 #include <iosfwd>
 #include <list>
 
-namespace gtsam {
-
+namespace gtsam
+{
 // Vector is just a typedef of the Eigen dynamic vector type
 
 // Typedef arbitary length vector
@@ -39,17 +39,17 @@ typedef Eigen::VectorXd Vector;
 
 // Commonly used fixed size vectors
 typedef Eigen::Matrix<double, 1, 1> Vector1;
-typedef Eigen::Vector2d Vector2;
-typedef Eigen::Vector3d Vector3;
+typedef Eigen::Vector2d             Vector2;
+typedef Eigen::Vector3d             Vector3;
 
 static const Eigen::MatrixBase<Vector2>::ConstantReturnType Z_2x1 = Vector2::Zero();
 static const Eigen::MatrixBase<Vector3>::ConstantReturnType Z_3x1 = Vector3::Zero();
 
 // Create handy typedefs and constants for vectors with N>3
 // VectorN and Z_Nx1, for N=1..9
-#define GTSAM_MAKE_VECTOR_DEFS(N)                \
-  using Vector##N = Eigen::Matrix<double, N, 1>; \
-  static const Eigen::MatrixBase<Vector##N>::ConstantReturnType Z_##N##x1 = Vector##N::Zero();
+#define GTSAM_MAKE_VECTOR_DEFS(N)                                                                                      \
+    using Vector##N                                                         = Eigen::Matrix<double, N, 1>;             \
+    static const Eigen::MatrixBase<Vector##N>::ConstantReturnType Z_##N##x1 = Vector##N::Zero();
 
 GTSAM_MAKE_VECTOR_DEFS(4)
 GTSAM_MAKE_VECTOR_DEFS(5)
@@ -62,19 +62,17 @@ GTSAM_MAKE_VECTOR_DEFS(11)
 GTSAM_MAKE_VECTOR_DEFS(12)
 GTSAM_MAKE_VECTOR_DEFS(15)
 
-typedef Eigen::VectorBlock<Vector> SubVector;
+typedef Eigen::VectorBlock<Vector>       SubVector;
 typedef Eigen::VectorBlock<const Vector> ConstSubVector;
 
 /**
-  * Ensure we are not including a different version of Eigen in user code than
-  * while compiling gtsam, since it can lead to hard-to-understand runtime
-  * crashes.
-  */
+ * Ensure we are not including a different version of Eigen in user code than
+ * while compiling gtsam, since it can lead to hard-to-understand runtime
+ * crashes.
+ */
 #if defined(GTSAM_EIGEN_VERSION_WORLD)
-static_assert(
-    GTSAM_EIGEN_VERSION_WORLD==EIGEN_WORLD_VERSION &&
-    GTSAM_EIGEN_VERSION_MAJOR==EIGEN_MAJOR_VERSION,
-  "Error: GTSAM was built against a different version of Eigen");
+static_assert(GTSAM_EIGEN_VERSION_WORLD == EIGEN_WORLD_VERSION && GTSAM_EIGEN_VERSION_MAJOR == EIGEN_MAJOR_VERSION,
+              "Error: GTSAM was built against a different version of Eigen");
 #endif
 
 /**
@@ -93,8 +91,7 @@ static_assert(
  *
  * Return true if two numbers are close wrt tol.
  */
-GTSAM_EXPORT bool fpEqual(double a, double b, double tol,
-                          bool check_relative_also = true);
+GTSAM_EXPORT bool fpEqual(double a, double b, double tol, bool check_relative_also = true);
 
 /**
  * print without optional string, must specify cout yourself
@@ -109,12 +106,12 @@ GTSAM_EXPORT void print(const Vector& v, const std::string& s = "");
 /**
  * save a vector to file, which can be loaded by matlab
  */
-GTSAM_EXPORT void save(const Vector& A, const std::string &s, const std::string& filename);
+GTSAM_EXPORT void save(const Vector& A, const std::string& s, const std::string& filename);
 
 /**
  * operator==()
  */
-GTSAM_EXPORT bool operator==(const Vector& vec1,const Vector& vec2);
+GTSAM_EXPORT bool operator==(const Vector& vec1, const Vector& vec2);
 
 /**
  * Greater than or equal to operation
@@ -126,21 +123,23 @@ GTSAM_EXPORT bool greaterThanOrEqual(const Vector& v1, const Vector& v2);
 /**
  * VecA == VecB up to tolerance
  */
-GTSAM_EXPORT bool equal_with_abs_tol(const Vector& vec1, const Vector& vec2, double tol=1e-9);
-GTSAM_EXPORT bool equal_with_abs_tol(const SubVector& vec1, const SubVector& vec2, double tol=1e-9);
+GTSAM_EXPORT bool equal_with_abs_tol(const Vector& vec1, const Vector& vec2, double tol = 1e-9);
+GTSAM_EXPORT bool equal_with_abs_tol(const SubVector& vec1, const SubVector& vec2, double tol = 1e-9);
 
 /**
  * Override of equal in Lie.h
  */
-inline bool equal(const Vector& vec1, const Vector& vec2, double tol) {
-  return equal_with_abs_tol(vec1, vec2, tol);
+inline bool equal(const Vector& vec1, const Vector& vec2, double tol)
+{
+    return equal_with_abs_tol(vec1, vec2, tol);
 }
 
 /**
  * Override of equal in Lie.h
  */
-inline bool equal(const Vector& vec1, const Vector& vec2) {
-  return equal_with_abs_tol(vec1, vec2);
+inline bool equal(const Vector& vec1, const Vector& vec2)
+{
+    return equal_with_abs_tol(vec1, vec2);
 }
 
 /**
@@ -150,7 +149,7 @@ inline bool equal(const Vector& vec1, const Vector& vec2) {
  * @param tol 1e-9
  * @return bool
  */
-GTSAM_EXPORT bool assert_equal(const Vector& vec1, const Vector& vec2, double tol=1e-9);
+GTSAM_EXPORT bool assert_equal(const Vector& vec1, const Vector& vec2, double tol = 1e-9);
 
 /**
  * Not the same, prints if error
@@ -159,7 +158,7 @@ GTSAM_EXPORT bool assert_equal(const Vector& vec1, const Vector& vec2, double to
  * @param tol 1e-9
  * @return bool
  */
-GTSAM_EXPORT bool assert_inequal(const Vector& vec1, const Vector& vec2, double tol=1e-9);
+GTSAM_EXPORT bool assert_inequal(const Vector& vec1, const Vector& vec2, double tol = 1e-9);
 
 /**
  * Same, prints if error
@@ -168,8 +167,8 @@ GTSAM_EXPORT bool assert_inequal(const Vector& vec1, const Vector& vec2, double 
  * @param tol 1e-9
  * @return bool
  */
-GTSAM_EXPORT bool assert_equal(const SubVector& vec1, const SubVector& vec2, double tol=1e-9);
-GTSAM_EXPORT bool assert_equal(const ConstSubVector& vec1, const ConstSubVector& vec2, double tol=1e-9);
+GTSAM_EXPORT bool assert_equal(const SubVector& vec1, const SubVector& vec2, double tol = 1e-9);
+GTSAM_EXPORT bool assert_equal(const ConstSubVector& vec1, const ConstSubVector& vec2, double tol = 1e-9);
 
 /**
  * check whether two vectors are linearly dependent
@@ -178,7 +177,7 @@ GTSAM_EXPORT bool assert_equal(const ConstSubVector& vec1, const ConstSubVector&
  * @param tol 1e-9
  * @return bool
  */
-GTSAM_EXPORT bool linear_dependent(const Vector& vec1, const Vector& vec2, double tol=1e-9);
+GTSAM_EXPORT bool linear_dependent(const Vector& vec1, const Vector& vec2, double tol = 1e-9);
 
 /**
  * elementwise division, but 0/0 = 0, not inf
@@ -186,22 +185,24 @@ GTSAM_EXPORT bool linear_dependent(const Vector& vec1, const Vector& vec2, doubl
  * @param b second vector
  * @return vector [a(i)/b(i)]
  */
-GTSAM_EXPORT Vector ediv_(const Vector &a, const Vector &b);
+GTSAM_EXPORT Vector ediv_(const Vector& a, const Vector& b);
 
 /**
  * Dot product
  */
-template<class V1, class V2>
-inline double dot(const V1 &a, const V2& b) {
-  assert (b.size()==a.size());
-  return a.dot(b);
+template <class V1, class V2>
+inline double dot(const V1& a, const V2& b)
+{
+    assert(b.size() == a.size());
+    return a.dot(b);
 }
 
 /** compatibility version for ublas' inner_prod() */
-template<class V1, class V2>
-inline double inner_prod(const V1 &a, const V2& b) {
-  assert (b.size()==a.size());
-  return a.dot(b);
+template <class V1, class V2>
+inline double inner_prod(const V1& a, const V2& b)
+{
+    assert(b.size() == a.size());
+    return a.dot(b);
 }
 
 #ifdef GTSAM_ALLOW_DEPRECATED_SINCE_V42
@@ -209,20 +210,25 @@ inline double inner_prod(const V1 &a, const V2& b) {
  * BLAS Level 1 scal: x <- alpha*x
  * @deprecated: use operators instead
  */
-inline void GTSAM_DEPRECATED scal(double alpha, Vector& x) { x *= alpha; }
+inline void GTSAM_DEPRECATED scal(double alpha, Vector& x)
+{
+    x *= alpha;
+}
 
 /**
  * BLAS Level 1 axpy: y <- alpha*x + y
  * @deprecated: use operators instead
  */
-template<class V1, class V2>
-inline void GTSAM_DEPRECATED axpy(double alpha, const V1& x, V2& y) {
-  assert (y.size()==x.size());
-  y += alpha * x;
+template <class V1, class V2>
+inline void GTSAM_DEPRECATED axpy(double alpha, const V1& x, V2& y)
+{
+    assert(y.size() == x.size());
+    y += alpha * x;
 }
-inline void axpy(double alpha, const Vector& x, SubVector y) {
-  assert (y.size()==x.size());
-  y += alpha * x;
+inline void axpy(double alpha, const Vector& x, SubVector y)
+{
+    assert(y.size() == x.size());
+    y += alpha * x;
 }
 #endif
 
@@ -231,10 +237,10 @@ inline void axpy(double alpha, const Vector& x, SubVector y) {
  *  from x, such that the corresponding Householder reflection zeroes out
  *  all but x.(j), j is base 0. Golub & Van Loan p 210.
  */
-GTSAM_EXPORT std::pair<double,Vector> house(const Vector &x);
+GTSAM_EXPORT std::pair<double, Vector> house(const Vector& x);
 
 /** beta = house(x) computes the HouseHolder vector in place */
-GTSAM_EXPORT double houseInPlace(Vector &x);
+GTSAM_EXPORT double houseInPlace(Vector& x);
 
 /**
  * Weighted Householder solution vector,
@@ -246,8 +252,7 @@ GTSAM_EXPORT double houseInPlace(Vector &x);
  * @param weights is a vector of weights/precisions where w=1/(s*s)
  * @return a pair of the pseudoinverse of v and the associated precision/weight
  */
-GTSAM_EXPORT std::pair<Vector, double>
-weightedPseudoinverse(const Vector& v, const Vector& weights);
+GTSAM_EXPORT std::pair<Vector, double> weightedPseudoinverse(const Vector& v, const Vector& weights);
 
 /*
  * Fast version *no error checking* !
