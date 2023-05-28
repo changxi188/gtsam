@@ -225,6 +225,7 @@ Vector6 Pose3::Logmap(const Pose3& pose, OptionalJacobian<6, 6> Hpose)
         const Matrix3 W = skewSymmetric(w / t);
         // Formula from Agrawal06iros, equation (14)
         // simplified with Mathematica, and multiplying in T to avoid matrix math
+        // tan(0.5 * t) = \frac{sin(t)} {cos(t) + 1}
         const double  Tan = tan(0.5 * t);
         const Vector3 WT  = W * T;
         const Vector3 u   = T - (0.5 * t) * WT + (1 - t / (2. * Tan)) * (W * WT);

@@ -370,43 +370,46 @@ struct NoiseModelFactorAliases<T1, T2, T3, T4, T5, T6, TExtra...>
  * between a Pose3 and Point3 could be implemented like so:
  *
  * ~~~~~~~~~~~~~~~~~~~~{.cpp}
- * class MyFactor : public NoiseModelFactorN<Pose3, Point3> {
- *  public:
- *   using Base = NoiseModelFactorN<Pose3, Point3>;
+ * class MyFactor : public NoiseModelFactorN<Pose3, Point3>
+ * {
+ * public:
+ *     using Base = NoiseModelFactorN<Pose3, Point3>;
  *
- *   MyFactor(Key pose_key, Key point_key, const SharedNoiseModel& noiseModel)
- *       : Base(noiseModel, pose_key, point_key) {}
+ *     MyFactor(Key pose_key, Key point_key, const SharedNoiseModel& noiseModel) : Base(noiseModel, pose_key, point_key)
+ *     {
+ *     }
  *
- *   Vector evaluateError(
- *       const Pose3& T, const Point3& p,
- *       boost::optional<Matrix&> H_T = boost::none,
- *       boost::optional<Matrix&> H_p = boost::none) const override {
- *     Matrix36 t_H_T;  // partial derivative of translation w.r.t. pose T
+ *     Vector evaluateError(const Pose3& T, const Point3& p, boost::optional<Matrix&> H_T = boost::none,
+ *                          boost::optional<Matrix&> H_p = boost::none) const override
+ *     {
+ *         Matrix36 t_H_T;  // partial derivative of translation w.r.t. pose T
  *
- *     // Only compute t_H_T if needed:
- *     Point3 t = T.translation(H_T ? &t_H_T : 0);
- *     double a = t(0); // a_H_t = [1, 0, 0]
- *     double b = p(0); // b_H_p = [1, 0, 0]
- *     double error = a - b; // H_a = 1, H_b = -1
+ *         // Only compute t_H_T if needed:
+ *         Point3 t     = T.translation(H_T ? &t_H_T : 0);
+ *         double a     = t(0);   // a_H_t = [1, 0, 0]
+ *         double b     = p(0);   // b_H_p = [1, 0, 0]
+ *         double error = a - b;  // H_a = 1, H_b = -1
  *
- *     // H_T = H_a * a_H_t * t_H_T = the first row of t_H_T
- *     if (H_T) *H_T = (Matrix(1, 6) << t_H_T.row(0)).finished();
- *     // H_p = H_b * b_H_p = -1 * [1, 0, 0]
- *     if (H_p) *H_p = (Matrix(1, 3) << -1., 0., 0.).finished();
+ *         // H_T = H_a * a_H_t * t_H_T = the first row of t_H_T
+ *         if (H_T)
+ *             *H_T = (Matrix(1, 6) << t_H_T.row(0)).finished();
+ *         // H_p = H_b * b_H_p = -1 * [1, 0, 0]
+ *         if (H_p)
+ *             *H_p = (Matrix(1, 3) << -1., 0., 0.).finished();
  *
- *     return Vector1(error);
- *   }
+ *         return Vector1(error);
+ *     }
  * };
  *
  * // Unit Test
- * TEST(NonlinearFactor, MyFactor) {
- *   MyFactor f(X(1), X(2), noiseModel::Unit::Create(1));
- *   EXPECT_DOUBLES_EQUAL(-8., f.evaluateError(Pose3(), Point3(8., 7., 6.))(0),
- *                        1e-9);
- *   Values values;
- *   values.insert(X(1), Pose3(Rot3::RzRyRx(0.1, 0.2, 0.3), Point3(1, 2, 3)));
- *   values.insert(X(2), Point3(1, 2, 3));
- *   EXPECT_CORRECT_FACTOR_JACOBIANS(f, values, 1e-5, 1e-5);
+ * TEST(NonlinearFactor, MyFactor)
+ * {
+ *     MyFactor f(X(1), X(2), noiseModel::Unit::Create(1));
+ *     EXPECT_DOUBLES_EQUAL(-8., f.evaluateError(Pose3(), Point3(8., 7., 6.))(0), 1e-9);
+ *     Values values;
+ *     values.insert(X(1), Pose3(Rot3::RzRyRx(0.1, 0.2, 0.3), Point3(1, 2, 3)));
+ *     values.insert(X(2), Point3(1, 2, 3));
+ *     EXPECT_CORRECT_FACTOR_JACOBIANS(f, values, 1e-5, 1e-5);
  * }
  * ~~~~~~~~~~~~~~~~~~~~
  *

@@ -90,6 +90,8 @@ print_enabled_config(${GTSAM_POSE3_EXPMAP}                "Pose3 retract is full
 print_enabled_config(${GTSAM_ALLOW_DEPRECATED_SINCE_V42}  "Allow features deprecated in GTSAM 4.2")
 print_enabled_config(${GTSAM_SUPPORT_NESTED_DISSECTION}   "Metis-based Nested Dissection   ")
 print_enabled_config(${GTSAM_TANGENT_PREINTEGRATION}      "Use tangent-space preintegration")
+print_enabled_config(${GTSAM_SLOW_BUT_CORRECT_BETWEENFACTOR}      "Use slow but correct between factor")
+
 
 message(STATUS "MATLAB toolbox flags")
 print_enabled_config(${GTSAM_INSTALL_MATLAB_TOOLBOX}      "Install MATLAB toolbox          ")

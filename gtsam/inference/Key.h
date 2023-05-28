@@ -29,7 +29,8 @@
 
 #include <iosfwd>
 
-namespace gtsam {
+namespace gtsam
+{
 
 /// Typedef for a function to format a key, i.e. to convert it to a string
 using KeyFormatter = std::function<std::string(Key)>;
@@ -51,14 +52,16 @@ GTSAM_EXPORT std::string _multirobotKeyFormatter(gtsam::Key key);
 /// formatter in print functions.
 ///
 /// Checks for LabeledSymbol, Symbol and then plain keys, in order.
-static const gtsam::KeyFormatter MultiRobotKeyFormatter =
-    &_multirobotKeyFormatter;
+static const gtsam::KeyFormatter MultiRobotKeyFormatter = &_multirobotKeyFormatter;
 
 /// To use the key_formatter on Keys, they must be wrapped in a StreamedKey.
-struct StreamedKey {
-  const Key &key_;
-  explicit StreamedKey(const Key &key) : key_(key) {}
-  GTSAM_EXPORT friend std::ostream &operator<<(std::ostream &, const StreamedKey &);
+struct StreamedKey
+{
+    const Key& key_;
+    explicit StreamedKey(const Key& key) : key_(key)
+    {
+    }
+    GTSAM_EXPORT friend std::ostream& operator<<(std::ostream&, const StreamedKey&);
 };
 
 /**
@@ -69,62 +72,60 @@ struct StreamedKey {
  *   Key key = LabeledSymbol('x', 'A', 5); // cast to key type
  *   cout << key_formatter(MultiRobotKeyFormatter) << StreamedKey(key);
  */
-class key_formatter {
- public:
-  explicit key_formatter(KeyFormatter v) : formatter_(v) {}
-  GTSAM_EXPORT friend std::ostream &operator<<(std::ostream &, const key_formatter &);
-  GTSAM_EXPORT friend std::ostream &operator<<(std::ostream &, const StreamedKey &);
+class key_formatter
+{
+public:
+    explicit key_formatter(KeyFormatter v) : formatter_(v)
+    {
+    }
+    GTSAM_EXPORT friend std::ostream& operator<<(std::ostream&, const key_formatter&);
+    GTSAM_EXPORT friend std::ostream& operator<<(std::ostream&, const StreamedKey&);
 
- private:
-  KeyFormatter formatter_;
-  static void *&property(std::ios_base &s);
-  static void set_property(std::ios_base &s, const KeyFormatter &f);
-  static KeyFormatter *get_property(std::ios_base &s);
+private:
+    KeyFormatter         formatter_;
+    static void*&        property(std::ios_base& s);
+    static void          set_property(std::ios_base& s, const KeyFormatter& f);
+    static KeyFormatter* get_property(std::ios_base& s);
 };
 
 /// Define collection type once and for all - also used in wrappers
 using KeyVector = FastVector<Key>;
 
 // TODO(frank): Nothing fast about these :-(
-using KeyList = FastList<Key>;
-using KeySet = FastSet<Key>;
+using KeyList     = FastList<Key>;
+using KeySet      = FastSet<Key>;
 using KeyGroupMap = FastMap<Key, int>;
 
 /// Utility function to print one key with optional prefix
-GTSAM_EXPORT void PrintKey(
-    Key key, const std::string &s = "",
-    const KeyFormatter &keyFormatter = DefaultKeyFormatter);
+GTSAM_EXPORT void PrintKey(Key key, const std::string& s = "", const KeyFormatter& keyFormatter = DefaultKeyFormatter);
 
 /// Utility function to print sets of keys with optional prefix
-GTSAM_EXPORT void PrintKeyList(
-    const KeyList &keys, const std::string &s = "",
-    const KeyFormatter &keyFormatter = DefaultKeyFormatter);
+GTSAM_EXPORT void PrintKeyList(const KeyList& keys, const std::string& s = "",
+                               const KeyFormatter& keyFormatter = DefaultKeyFormatter);
 
 /// Utility function to print sets of keys with optional prefix
-GTSAM_EXPORT void PrintKeyVector(
-    const KeyVector &keys, const std::string &s = "",
-    const KeyFormatter &keyFormatter = DefaultKeyFormatter);
+GTSAM_EXPORT void PrintKeyVector(const KeyVector& keys, const std::string& s = "",
+                                 const KeyFormatter& keyFormatter = DefaultKeyFormatter);
 
 /// Utility function to print sets of keys with optional prefix
-GTSAM_EXPORT void PrintKeySet(
-    const KeySet &keys, const std::string &s = "",
-    const KeyFormatter &keyFormatter = DefaultKeyFormatter);
+GTSAM_EXPORT void PrintKeySet(const KeySet& keys, const std::string& s = "",
+                              const KeyFormatter& keyFormatter = DefaultKeyFormatter);
 
 // Define Key to be Testable by specializing gtsam::traits
-template<typename T> struct traits;
+template <typename T>
+struct traits;
 
 template <>
-struct traits<Key> {
-  static void Print(const Key& val, const std::string& str = "") {
-    PrintKey(val, str);
-  }
-  static bool Equals(const Key& val1, const Key& val2, double tol = 1e-8) {
-    return val1 == val2;
-  }
+struct traits<Key>
+{
+    static void Print(const Key& val, const std::string& str = "")
+    {
+        PrintKey(val, str);
+    }
+    static bool Equals(const Key& val1, const Key& val2, double tol = 1e-8)
+    {
+        return val1 == val2;
+    }
 };
 
-} // namespace gtsam
-
-
-
-
+}  // namespace gtsam

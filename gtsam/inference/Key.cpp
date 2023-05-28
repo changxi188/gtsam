@@ -25,102 +25,113 @@
 
 using namespace std;
 
-namespace gtsam {
+namespace gtsam
+{
 
 /* ************************************************************************* */
-string _defaultKeyFormatter(Key key) {
-  const Symbol asSymbol(key);
-  if (asSymbol.chr() > 0)
-    return (string) asSymbol;
-  else
-    return boost::lexical_cast<string>(key);
+string _defaultKeyFormatter(Key key)
+{
+    const Symbol asSymbol(key);
+    if (asSymbol.chr() > 0)
+        return (string)asSymbol;
+    else
+        return boost::lexical_cast<string>(key);
 }
 
 /* ************************************************************************* */
-void PrintKey(Key key, const string& s, const KeyFormatter& keyFormatter) {
-  cout << s << keyFormatter(key);
+void PrintKey(Key key, const string& s, const KeyFormatter& keyFormatter)
+{
+    cout << s << keyFormatter(key);
 }
 
 /* ************************************************************************* */
-string _multirobotKeyFormatter(Key key) {
-  const LabeledSymbol asLabeledSymbol(key);
-  if (asLabeledSymbol.chr() > 0 && asLabeledSymbol.label() > 0)
-    return (string) asLabeledSymbol;
+string _multirobotKeyFormatter(Key key)
+{
+    const LabeledSymbol asLabeledSymbol(key);
+    if (asLabeledSymbol.chr() > 0 && asLabeledSymbol.label() > 0)
+        return (string)asLabeledSymbol;
 
-  const Symbol asSymbol(key);
-  if (asLabeledSymbol.chr() > 0)
-    return (string) asSymbol;
-  else
-    return boost::lexical_cast<string>(key);
-}
-
-/* ************************************************************************* */
-template<class CONTAINER>
-void Print(const CONTAINER& keys, const string& s,
-    const KeyFormatter& keyFormatter) {
-  cout << s << " ";
-  if (keys.empty())
-    cout << "(none)" << endl;
-  else {
-    for(const Key& key: keys)
-      cout << keyFormatter(key) << " ";
-    cout << endl;
-  }
+    const Symbol asSymbol(key);
+    if (asLabeledSymbol.chr() > 0)
+        return (string)asSymbol;
+    else
+        return boost::lexical_cast<string>(key);
 }
 
 /* ************************************************************************* */
-void PrintKeyList(const KeyList& keys, const string& s,
-    const KeyFormatter& keyFormatter) {
-  Print(keys, s, keyFormatter);
+template <class CONTAINER>
+void Print(const CONTAINER& keys, const string& s, const KeyFormatter& keyFormatter)
+{
+    cout << s << " ";
+    if (keys.empty())
+        cout << "(none)" << endl;
+    else
+    {
+        for (const Key& key : keys)
+            cout << keyFormatter(key) << " ";
+        cout << endl;
+    }
+}
+
+/* ************************************************************************* */
+void PrintKeyList(const KeyList& keys, const string& s, const KeyFormatter& keyFormatter)
+{
+    Print(keys, s, keyFormatter);
 }
 /* ************************************************************************* */
-void PrintKeyVector(const KeyVector& keys, const string& s,
-    const KeyFormatter& keyFormatter) {
-  Print(keys, s, keyFormatter);
+void PrintKeyVector(const KeyVector& keys, const string& s, const KeyFormatter& keyFormatter)
+{
+    Print(keys, s, keyFormatter);
 }
 /* ************************************************************************* */
-void PrintKeySet(const KeySet& keys, const string& s,
-    const KeyFormatter& keyFormatter) {
-  Print(keys, s, keyFormatter);
+void PrintKeySet(const KeySet& keys, const string& s, const KeyFormatter& keyFormatter)
+{
+    Print(keys, s, keyFormatter);
 }
 
 /* ************************************************************************* */
 // Access to custom stream property.
-void *&key_formatter::property(ios_base &s) {
-  static int kUniqueIndex = ios_base::xalloc();
-  return s.pword(kUniqueIndex);
+void*& key_formatter::property(ios_base& s)
+{
+    static int kUniqueIndex = ios_base::xalloc();
+    return s.pword(kUniqueIndex);
 }
 
 /* ************************************************************************* */
 // Store pointer to formatter in property.
-void key_formatter::set_property(ios_base &s, const KeyFormatter &f) {
-  property(s) = (void *)(&f);
+void key_formatter::set_property(ios_base& s, const KeyFormatter& f)
+{
+    property(s) = (void*)(&f);
 }
 
 /* ************************************************************************* */
 // Get pointer to formatter from property.
-KeyFormatter *key_formatter::get_property(ios_base &s) {
-  return (KeyFormatter *)(property(s));
+KeyFormatter* key_formatter::get_property(ios_base& s)
+{
+    return (KeyFormatter*)(property(s));
 }
 
 /* ************************************************************************* */
 // Stream operator that will take a key_formatter and set the stream property.
-ostream &operator<<(ostream &os, const key_formatter &m) {
-  key_formatter::set_property(os, m.formatter_);
-  return os;
+ostream& operator<<(ostream& os, const key_formatter& m)
+{
+    key_formatter::set_property(os, m.formatter_);
+    return os;
 }
 
 /* ************************************************************************* */
 // Stream operator that takes a StreamedKey and properly formats it
-ostream &operator<<(ostream &os, const StreamedKey &streamedKey) {
-  const KeyFormatter *formatter = key_formatter::get_property(os);
-  if (formatter == nullptr) {
-    formatter = &DefaultKeyFormatter;
-  }
-  os << (*formatter)(streamedKey.key_);
-  return (os);
+ostream& operator<<(ostream& os, const StreamedKey& streamedKey)
+{
+    const KeyFormatter* formatter = key_formatter::get_property(os);
+    if (formatter == nullptr)
+    {
+        formatter = &DefaultKeyFormatter;
+    }
+    os << (*formatter)(streamedKey.key_);
+    return (os);
 }
 
 /* ************************************************************************* */
 
-} // \namespace gtsam
+}  // namespace gtsam
