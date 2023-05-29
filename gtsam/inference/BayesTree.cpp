@@ -22,41 +22,45 @@
 
 #include <iostream>
 
-namespace gtsam {
-
+namespace gtsam
+{
 /* ************************************************************************* */
-void BayesTreeCliqueStats::print(const std::string& s) const {
-  std::cout << s
-    << "avg Conditional Size: " << avgConditionalSize << std::endl
-    << "max Conditional Size: " << maxConditionalSize << std::endl
-    << "avg Separator Size: "   << avgSeparatorSize   << std::endl
-    << "max Separator Size: "   << maxSeparatorSize   << std::endl;
+void BayesTreeCliqueStats::print(const std::string& s) const
+{
+    std::cout << s << "avg Conditional Size: " << avgConditionalSize << std::endl
+              << "max Conditional Size: " << maxConditionalSize << std::endl
+              << "avg Separator Size: " << avgSeparatorSize << std::endl
+              << "max Separator Size: " << maxSeparatorSize << std::endl;
 }
 
 /* ************************************************************************* */
 BayesTreeCliqueStats BayesTreeCliqueData::getStats() const
 {
-  BayesTreeCliqueStats stats;
+    BayesTreeCliqueStats stats;
 
-  double sum = 0.0;
-  size_t max = 0;
-  for(size_t s: conditionalSizes) {
-    sum += (double)s;
-    if(s > max) max = s;
-  }
-  stats.avgConditionalSize = sum / (double)conditionalSizes.size();
-  stats.maxConditionalSize = max;
+    double sum = 0.0;
+    size_t max = 0;
+    for (size_t s : conditionalSizes)
+    {
+        sum += (double)s;
+        if (s > max)
+            max = s;
+    }
+    stats.avgConditionalSize = sum / (double)conditionalSizes.size();
+    stats.maxConditionalSize = max;
 
-  sum = 0.0;
-  max = 1;
-  for(size_t s: separatorSizes) {
-    sum += (double)s;
-    if(s > max) max = s;
-  }
-  stats.avgSeparatorSize = sum / (double)separatorSizes.size();
-  stats.maxSeparatorSize = max;
+    sum = 0.0;
+    max = 1;
+    for (size_t s : separatorSizes)
+    {
+        sum += (double)s;
+        if (s > max)
+            max = s;
+    }
+    stats.avgSeparatorSize = sum / (double)separatorSizes.size();
+    stats.maxSeparatorSize = max;
 
-  return stats;
+    return stats;
 }
 
-}
+}  // namespace gtsam

@@ -31,7 +31,6 @@ using namespace std;
 
 namespace gtsam
 {
-
 /* ************************************************************************* */
 namespace internal
 {

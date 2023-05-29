@@ -18,51 +18,50 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-#include <functional>
-#include <boost/variant.hpp>
 #include <boost/optional.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/variant.hpp>
+#include <functional>
 
 #include <gtsam/inference/Ordering.h>
 #include <gtsam/inference/VariableIndex.h>
 
-namespace gtsam {
-
-  /// Traits class for eliminateable factor graphs, specifies the types that result from
-  /// elimination, etc.  This must be defined for each factor graph that inherits from
-  /// EliminateableFactorGraph.
-  template<class GRAPH>
-  struct EliminationTraits
-  {
+namespace gtsam
+{
+/// Traits class for eliminateable factor graphs, specifies the types that result from
+/// elimination, etc.  This must be defined for each factor graph that inherits from
+/// EliminateableFactorGraph.
+template <class GRAPH>
+struct EliminationTraits
+{
     // Template for deriving:
     // typedef MyFactor FactorType;                   ///< Type of factors in factor graph (e.g. GaussianFactor)
     // typedef MyFactorGraphType FactorGraphType;     ///< Type of the factor graph (e.g. GaussianFactorGraph)
-    // typedef MyConditional ConditionalType;         ///< Type of conditionals from elimination (e.g. GaussianConditional)
-    // typedef MyBayesNet BayesNetType;               ///< Type of Bayes net from sequential elimination (e.g. GaussianBayesNet)
-    // typedef MyEliminationTree EliminationTreeType; ///< Type of elimination tree (e.g. GaussianEliminationTree)
-    // typedef MyBayesTree BayesTreeType;             ///< Type of Bayes tree (e.g. GaussianBayesTree)
-    // typedef MyJunctionTree JunctionTreeType;       ///< Type of Junction tree (e.g. GaussianJunctionTree)
-    // static pair<shared_ptr<ConditionalType>, shared_ptr<FactorType>
+    // typedef MyConditional ConditionalType;         ///< Type of conditionals from elimination (e.g.
+    // GaussianConditional) typedef MyBayesNet BayesNetType;               ///< Type of Bayes net from sequential
+    // elimination (e.g. GaussianBayesNet) typedef MyEliminationTree EliminationTreeType; ///< Type of elimination tree
+    // (e.g. GaussianEliminationTree) typedef MyBayesTree BayesTreeType;             ///< Type of Bayes tree (e.g.
+    // GaussianBayesTree) typedef MyJunctionTree JunctionTreeType;       ///< Type of Junction tree (e.g.
+    // GaussianJunctionTree) static pair<shared_ptr<ConditionalType>, shared_ptr<FactorType>
     //   DefaultEliminate(
     //   const MyFactorGraph& factors, const Ordering& keys); ///< The default dense elimination function
-  };
+};
 
-
-  /** EliminateableFactorGraph is a base class for factor graphs that contains elimination
-   *  algorithms.  Any factor graph holding eliminateable factors can derive from this class to
-   *  expose functions for computing marginals, conditional marginals, doing multifrontal and
-   *  sequential elimination, etc. */
-  template<class FACTORGRAPH>
-  class EliminateableFactorGraph
-  {
-  private:
-    typedef EliminateableFactorGraph<FACTORGRAPH> This; ///< Typedef to this class.
-    typedef FACTORGRAPH FactorGraphType; ///< Typedef to factor graph type
+/** EliminateableFactorGraph is a base class for factor graphs that contains elimination
+ *  algorithms.  Any factor graph holding eliminateable factors can derive from this class to
+ *  expose functions for computing marginals, conditional marginals, doing multifrontal and
+ *  sequential elimination, etc. */
+template <class FACTORGRAPH>
+class EliminateableFactorGraph
+{
+private:
+    typedef EliminateableFactorGraph<FACTORGRAPH> This;             ///< Typedef to this class.
+    typedef FACTORGRAPH                           FactorGraphType;  ///< Typedef to factor graph type
     // Base factor type stored in this graph (private because derived classes will get this from
     // their FactorGraph base class)
     typedef typename EliminationTraits<FactorGraphType>::FactorType _FactorType;
 
-  public:
+public:
     /// Typedef to the specific EliminationTraits for this graph
     typedef EliminationTraits<FactorGraphType> EliminationTraitsType;
 
@@ -114,10 +113,10 @@ namespace gtsam {
      *  boost::shared_ptr<GaussianBayesNet> result = graph.eliminateSequential(EliminateQR, varIndex, boost::none);
      *  \endcode
      *  */
-    boost::shared_ptr<BayesNetType> eliminateSequential(
-      OptionalOrderingType orderingType = boost::none,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<BayesNetType>
+    eliminateSequential(OptionalOrderingType  orderingType  = boost::none,
+                        const Eliminate&      function      = EliminationTraitsType::DefaultEliminate,
+                        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do sequential elimination of all variables to produce a Bayes net.
      *
@@ -130,13 +129,12 @@ namespace gtsam {
      *  \code
      *  VariableIndex varIndex(graph); // Build variable index
      *  Data data = otherFunctionUsingVariableIndex(graph, varIndex); // Other code that uses variable index
-     *  boost::shared_ptr<GaussianBayesNet> result = graph.eliminateSequential(myOrdering, EliminateQR, varIndex, boost::none);
-     *  \endcode
+     *  boost::shared_ptr<GaussianBayesNet> result = graph.eliminateSequential(myOrdering, EliminateQR, varIndex,
+     * boost::none); \endcode
      *  */
-    boost::shared_ptr<BayesNetType> eliminateSequential(
-      const Ordering& ordering,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<BayesNetType>
+    eliminateSequential(const Ordering& ordering, const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+                        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do multifrontal elimination of all variables to produce a Bayes tree.  If an ordering is not
      *  provided, the ordering will be computed using either COLAMD or METIS, dependeing on
@@ -154,10 +152,10 @@ namespace gtsam {
      *  boost::shared_ptr<GaussianBayesTree> result = graph.eliminateMultifrontal(EliminateQR, boost::none, varIndex);
      *  \endcode
      *  */
-    boost::shared_ptr<BayesTreeType> eliminateMultifrontal(
-      OptionalOrderingType orderingType = boost::none,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<BayesTreeType>
+    eliminateMultifrontal(OptionalOrderingType  orderingType  = boost::none,
+                          const Eliminate&      function      = EliminationTraitsType::DefaultEliminate,
+                          OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do multifrontal elimination of all variables to produce a Bayes tree.  If an ordering is not
      *  provided, the ordering will be computed using either COLAMD or METIS, dependeing on
@@ -168,50 +166,41 @@ namespace gtsam {
      *  boost::shared_ptr<GaussianBayesTree> result = graph.eliminateMultifrontal(EliminateQR, myOrdering);
      *  \endcode
      *  */
-    boost::shared_ptr<BayesTreeType> eliminateMultifrontal(
-      const Ordering& ordering,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<BayesTreeType>
+    eliminateMultifrontal(const Ordering& ordering, const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+                          OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do sequential elimination of some variables, in \c ordering provided, to produce a Bayes net
      *  and a remaining factor graph.  This computes the factorization \f$ p(X) = p(A|B) p(B) \f$,
      *  where \f$ A = \f$ \c variables, \f$ X \f$ is all the variables in the factor graph, and \f$
      *  B = X\backslash A \f$. */
-    std::pair<boost::shared_ptr<BayesNetType>, boost::shared_ptr<FactorGraphType> >
-      eliminatePartialSequential(
-      const Ordering& ordering,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    std::pair<boost::shared_ptr<BayesNetType>, boost::shared_ptr<FactorGraphType> > eliminatePartialSequential(
+        const Ordering& ordering, const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do sequential elimination of the given \c variables in an ordering computed by COLAMD to
      *  produce a Bayes net and a remaining factor graph.  This computes the factorization \f$ p(X)
      *  = p(A|B) p(B) \f$, where \f$ A = \f$ \c variables, \f$ X \f$ is all the variables in the
      *  factor graph, and \f$ B = X\backslash A \f$. */
-    std::pair<boost::shared_ptr<BayesNetType>, boost::shared_ptr<FactorGraphType> >
-      eliminatePartialSequential(
-      const KeyVector& variables,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    std::pair<boost::shared_ptr<BayesNetType>, boost::shared_ptr<FactorGraphType> > eliminatePartialSequential(
+        const KeyVector& variables, const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do multifrontal elimination of some variables, in \c ordering provided, to produce a Bayes
      *  tree and a remaining factor graph.  This computes the factorization \f$ p(X) = p(A|B) p(B)
      *  \f$, where \f$ A = \f$ \c variables, \f$ X \f$ is all the variables in the factor graph, and
      *  \f$ B = X\backslash A \f$. */
-    std::pair<boost::shared_ptr<BayesTreeType>, boost::shared_ptr<FactorGraphType> >
-      eliminatePartialMultifrontal(
-      const Ordering& ordering,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    std::pair<boost::shared_ptr<BayesTreeType>, boost::shared_ptr<FactorGraphType> > eliminatePartialMultifrontal(
+        const Ordering& ordering, const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Do multifrontal elimination of the given \c variables in an ordering computed by COLAMD to
      *  produce a Bayes tree and a remaining factor graph.  This computes the factorization \f$ p(X)
      *  = p(A|B) p(B) \f$, where \f$ A = \f$ \c variables, \f$ X \f$ is all the variables in the
      *  factor graph, and \f$ B = X\backslash A \f$. */
-    std::pair<boost::shared_ptr<BayesTreeType>, boost::shared_ptr<FactorGraphType> >
-      eliminatePartialMultifrontal(
-      const KeyVector& variables,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    std::pair<boost::shared_ptr<BayesTreeType>, boost::shared_ptr<FactorGraphType> > eliminatePartialMultifrontal(
+        const KeyVector& variables, const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Compute the marginal of the requested variables and return the result as a Bayes net.  Uses
      *  COLAMD marginalization ordering by default
@@ -222,10 +211,10 @@ namespace gtsam {
      *         used.
      *  @param variableIndex Optional pre-computed VariableIndex for the factor graph, if not
      *         provided one will be computed. */
-    boost::shared_ptr<BayesNetType> marginalMultifrontalBayesNet(
-      boost::variant<const Ordering&, const KeyVector&> variables,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<BayesNetType>
+    marginalMultifrontalBayesNet(boost::variant<const Ordering&, const KeyVector&> variables,
+                                 const Eliminate&      function      = EliminationTraitsType::DefaultEliminate,
+                                 OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Compute the marginal of the requested variables and return the result as a Bayes net.
      *  @param variables Determines the variables whose marginal to compute, if provided as an
@@ -238,10 +227,9 @@ namespace gtsam {
      *  @param variableIndex Optional pre-computed VariableIndex for the factor graph, if not
      *         provided one will be computed. */
     boost::shared_ptr<BayesNetType> marginalMultifrontalBayesNet(
-      boost::variant<const Ordering&, const KeyVector&> variables,
-      const Ordering& marginalizedVariableOrdering,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+        boost::variant<const Ordering&, const KeyVector&> variables, const Ordering& marginalizedVariableOrdering,
+        const Eliminate&      function      = EliminationTraitsType::DefaultEliminate,
+        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Compute the marginal of the requested variables and return the result as a Bayes tree.  Uses
      *  COLAMD marginalization order by default
@@ -252,10 +240,10 @@ namespace gtsam {
      *         used.
      *  @param variableIndex Optional pre-computed VariableIndex for the factor graph, if not
      *         provided one will be computed. */
-    boost::shared_ptr<BayesTreeType> marginalMultifrontalBayesTree(
-      boost::variant<const Ordering&, const KeyVector&> variables,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<BayesTreeType>
+    marginalMultifrontalBayesTree(boost::variant<const Ordering&, const KeyVector&> variables,
+                                  const Eliminate&      function      = EliminationTraitsType::DefaultEliminate,
+                                  OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Compute the marginal of the requested variables and return the result as a Bayes tree.
      *  @param variables Determines the variables whose marginal to compute, if provided as an
@@ -268,79 +256,82 @@ namespace gtsam {
      *  @param variableIndex Optional pre-computed VariableIndex for the factor graph, if not
      *         provided one will be computed. */
     boost::shared_ptr<BayesTreeType> marginalMultifrontalBayesTree(
-      boost::variant<const Ordering&, const KeyVector&> variables,
-      const Ordering& marginalizedVariableOrdering,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+        boost::variant<const Ordering&, const KeyVector&> variables, const Ordering& marginalizedVariableOrdering,
+        const Eliminate&      function      = EliminationTraitsType::DefaultEliminate,
+        OptionalVariableIndex variableIndex = boost::none) const;
 
     /** Compute the marginal factor graph of the requested variables. */
-    boost::shared_ptr<FactorGraphType> marginal(
-      const KeyVector& variables,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const;
+    boost::shared_ptr<FactorGraphType> marginal(const KeyVector& variables,
+                                                const Eliminate& function = EliminationTraitsType::DefaultEliminate,
+                                                OptionalVariableIndex variableIndex = boost::none) const;
 
-  private:
+private:
+    // Access the derived factor graph class
+    const FactorGraphType& asDerived() const
+    {
+        return static_cast<const FactorGraphType&>(*this);
+    }
 
     // Access the derived factor graph class
-    const FactorGraphType& asDerived() const { return static_cast<const FactorGraphType&>(*this); }
+    FactorGraphType& asDerived()
+    {
+        return static_cast<FactorGraphType&>(*this);
+    }
 
-    // Access the derived factor graph class
-    FactorGraphType& asDerived() { return static_cast<FactorGraphType&>(*this); }
-
-  public:
-  #ifdef GTSAM_ALLOW_DEPRECATED_SINCE_V42
+public:
+#ifdef GTSAM_ALLOW_DEPRECATED_SINCE_V42
     /** @deprecated ordering and orderingType shouldn't both be specified */
-    boost::shared_ptr<BayesNetType> GTSAM_DEPRECATED eliminateSequential(
-      const Ordering& ordering,
-      const Eliminate& function,
-      OptionalVariableIndex variableIndex,
-      OptionalOrderingType orderingType) const {
+    boost::shared_ptr<BayesNetType> GTSAM_DEPRECATED eliminateSequential(const Ordering&       ordering,
+                                                                         const Eliminate&      function,
+                                                                         OptionalVariableIndex variableIndex,
+                                                                         OptionalOrderingType  orderingType) const
+    {
         return eliminateSequential(ordering, function, variableIndex);
-      }
-    
+    }
+
     /** @deprecated orderingType specified first for consistency */
-    boost::shared_ptr<BayesNetType> GTSAM_DEPRECATED eliminateSequential(
-      const Eliminate& function,
-      OptionalVariableIndex variableIndex = boost::none,
-      OptionalOrderingType orderingType = boost::none) const {
+    boost::shared_ptr<BayesNetType> GTSAM_DEPRECATED
+                                    eliminateSequential(const Eliminate& function, OptionalVariableIndex variableIndex = boost::none,
+                                                        OptionalOrderingType orderingType = boost::none) const
+    {
         return eliminateSequential(orderingType, function, variableIndex);
-      }
+    }
 
     /** @deprecated ordering and orderingType shouldn't both be specified */
-    boost::shared_ptr<BayesTreeType> GTSAM_DEPRECATED eliminateMultifrontal(
-      const Ordering& ordering,
-      const Eliminate& function,
-      OptionalVariableIndex variableIndex,
-      OptionalOrderingType orderingType) const {
+    boost::shared_ptr<BayesTreeType> GTSAM_DEPRECATED eliminateMultifrontal(const Ordering&       ordering,
+                                                                            const Eliminate&      function,
+                                                                            OptionalVariableIndex variableIndex,
+                                                                            OptionalOrderingType  orderingType) const
+    {
         return eliminateMultifrontal(ordering, function, variableIndex);
-      }
+    }
 
     /** @deprecated orderingType specified first for consistency */
-    boost::shared_ptr<BayesTreeType> GTSAM_DEPRECATED eliminateMultifrontal(
-      const Eliminate& function,
-      OptionalVariableIndex variableIndex = boost::none,
-      OptionalOrderingType orderingType = boost::none) const {
+    boost::shared_ptr<BayesTreeType> GTSAM_DEPRECATED
+                                     eliminateMultifrontal(const Eliminate& function, OptionalVariableIndex variableIndex = boost::none,
+                                                           OptionalOrderingType orderingType = boost::none) const
+    {
         return eliminateMultifrontal(orderingType, function, variableIndex);
-      }
+    }
 
     /** @deprecated */
-    boost::shared_ptr<BayesNetType> GTSAM_DEPRECATED marginalMultifrontalBayesNet(
-      boost::variant<const Ordering&, const KeyVector&> variables,
-      boost::none_t,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const {
-          return marginalMultifrontalBayesNet(variables, function, variableIndex);
-      }
+    boost::shared_ptr<BayesNetType> GTSAM_DEPRECATED
+                                    marginalMultifrontalBayesNet(boost::variant<const Ordering&, const KeyVector&> variables, boost::none_t,
+                                                                 const Eliminate&      function = EliminationTraitsType::DefaultEliminate,
+                                                                 OptionalVariableIndex variableIndex = boost::none) const
+    {
+        return marginalMultifrontalBayesNet(variables, function, variableIndex);
+    }
 
     /** @deprecated */
-    boost::shared_ptr<BayesTreeType> GTSAM_DEPRECATED marginalMultifrontalBayesTree(
-      boost::variant<const Ordering&, const KeyVector&> variables,
-      boost::none_t,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate,
-      OptionalVariableIndex variableIndex = boost::none) const {
-          return marginalMultifrontalBayesTree(variables, function, variableIndex);
-      }
-  #endif
-  };
+    boost::shared_ptr<BayesTreeType> GTSAM_DEPRECATED
+                                     marginalMultifrontalBayesTree(boost::variant<const Ordering&, const KeyVector&> variables, boost::none_t,
+                                                                   const Eliminate&      function = EliminationTraitsType::DefaultEliminate,
+                                                                   OptionalVariableIndex variableIndex = boost::none) const
+    {
+        return marginalMultifrontalBayesTree(variables, function, variableIndex);
+    }
+#endif
+};
 
-}
+}  // namespace gtsam

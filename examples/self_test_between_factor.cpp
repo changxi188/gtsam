@@ -92,6 +92,7 @@ int main()
 {
     gtsam::Symbol X1('X', 1);
     gtsam::Symbol X2('X', 2);
+    gtsam::Symbol X3('X', 3);
     gtsam::Pose3  wTb1(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_4 + 0.01), gtsam::Point3(1, 0, 0));
     gtsam::Pose3  wTb2(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_2 + 0.02), gtsam::Point3(1, 0, 0));
 
@@ -99,6 +100,7 @@ int main()
     gtsam::Values values;
     values.insert<gtsam::Pose3>(X1, wTb1);
     values.insert<gtsam::Pose3>(X2, wTb2);
+    values.insert<gtsam::Pose3>(X3, wTb2);
     values.print("all values : ");
 
     // measurement
