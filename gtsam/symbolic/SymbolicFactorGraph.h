@@ -18,85 +18,95 @@
 
 #pragma once
 
-#include <gtsam/symbolic/SymbolicFactor.h>
-#include <gtsam/inference/FactorGraph.h>
-#include <gtsam/inference/EliminateableFactorGraph.h>
 #include <gtsam/base/types.h>
+#include <gtsam/inference/EliminateableFactorGraph.h>
+#include <gtsam/inference/FactorGraph.h>
+#include <gtsam/symbolic/SymbolicFactor.h>
 
-namespace gtsam {
+namespace gtsam
+{
+class SymbolicFactorGraph;
+class SymbolicConditional;
+class SymbolicBayesNet;
+class SymbolicEliminationTree;
+class SymbolicBayesTree;
+class SymbolicJunctionTree;
 
-  class SymbolicFactorGraph;
-  class SymbolicConditional;
-  class SymbolicBayesNet;
-  class SymbolicEliminationTree;
-  class SymbolicBayesTree;
-  class SymbolicJunctionTree;
-
-  /* ************************************************************************* */
-  template<> struct EliminationTraits<SymbolicFactorGraph>
-  {
-    typedef SymbolicFactor FactorType;                   ///< Type of factors in factor graph
-    typedef SymbolicFactorGraph FactorGraphType;         ///< Type of the factor graph (e.g. GaussianFactorGraph)
-    typedef SymbolicConditional ConditionalType;         ///< Type of conditionals from elimination
-    typedef SymbolicBayesNet BayesNetType;               ///< Type of Bayes net from sequential elimination
-    typedef SymbolicEliminationTree EliminationTreeType; ///< Type of elimination tree
-    typedef SymbolicBayesTree BayesTreeType;             ///< Type of Bayes tree
-    typedef SymbolicJunctionTree JunctionTreeType;       ///< Type of Junction tree
+/* ************************************************************************* */
+template <>
+struct EliminationTraits<SymbolicFactorGraph>
+{
+    typedef SymbolicFactor          FactorType;           ///< Type of factors in factor graph
+    typedef SymbolicFactorGraph     FactorGraphType;      ///< Type of the factor graph (e.g. GaussianFactorGraph)
+    typedef SymbolicConditional     ConditionalType;      ///< Type of conditionals from elimination
+    typedef SymbolicBayesNet        BayesNetType;         ///< Type of Bayes net from sequential elimination
+    typedef SymbolicEliminationTree EliminationTreeType;  ///< Type of elimination tree
+    typedef SymbolicBayesTree       BayesTreeType;        ///< Type of Bayes tree
+    typedef SymbolicJunctionTree    JunctionTreeType;     ///< Type of Junction tree
     /// The default dense elimination function
-    static std::pair<boost::shared_ptr<ConditionalType>, boost::shared_ptr<FactorType> >
-      DefaultEliminate(const FactorGraphType& factors, const Ordering& keys) {
-        return EliminateSymbolic(factors, keys); }
-    /// The default ordering generation function
-    static Ordering DefaultOrderingFunc(
-        const FactorGraphType& graph,
-        boost::optional<const VariableIndex&> variableIndex) {
-      return Ordering::Colamd(*variableIndex);
+    static std::pair<boost::shared_ptr<ConditionalType>, boost::shared_ptr<FactorType>>
+    DefaultEliminate(const FactorGraphType& factors, const Ordering& keys)
+    {
+        return EliminateSymbolic(factors, keys);
     }
-  };
+    /// The default ordering generation function
+    static Ordering DefaultOrderingFunc(const FactorGraphType&                graph,
+                                        boost::optional<const VariableIndex&> variableIndex)
+    {
+        return Ordering::Colamd(*variableIndex);
+    }
+};
 
-  /* ************************************************************************* */
-  /** Symbolic Factor Graph
-   *  \nosubgrouping
-   */
-  class GTSAM_EXPORT SymbolicFactorGraph :
-    public FactorGraph<SymbolicFactor>,
-    public EliminateableFactorGraph<SymbolicFactorGraph>
-  {
-  public:
-
-    typedef SymbolicFactorGraph This; ///< Typedef to this class
-    typedef FactorGraph<SymbolicFactor> Base; ///< Typedef to base factor graph type
-    typedef EliminateableFactorGraph<This> BaseEliminateable; ///< Typedef to base elimination class
-    typedef boost::shared_ptr<This> shared_ptr; ///< shared_ptr to this class
+/* ************************************************************************* */
+/** Symbolic Factor Graph
+ *  \nosubgrouping
+ */
+class GTSAM_EXPORT SymbolicFactorGraph : public FactorGraph<SymbolicFactor>,
+                                         public EliminateableFactorGraph<SymbolicFactorGraph>
+{
+public:
+    typedef SymbolicFactorGraph            This;               ///< Typedef to this class
+    typedef FactorGraph<SymbolicFactor>    Base;               ///< Typedef to base factor graph type
+    typedef EliminateableFactorGraph<This> BaseEliminateable;  ///< Typedef to base elimination class
+    typedef boost::shared_ptr<This>        shared_ptr;         ///< shared_ptr to this class
 
     /// @name Standard Constructors
     /// @{
 
     /** Construct empty factor graph */
-    SymbolicFactorGraph() {}
+    SymbolicFactorGraph()
+    {
+    }
 
     /** Construct from iterator over factors */
-    template<typename ITERATOR>
-    SymbolicFactorGraph(ITERATOR firstFactor, ITERATOR lastFactor) : Base(firstFactor, lastFactor) {}
+    template <typename ITERATOR>
+    SymbolicFactorGraph(ITERATOR firstFactor, ITERATOR lastFactor) : Base(firstFactor, lastFactor)
+    {
+    }
 
     /** Construct from container of factors (shared_ptr or plain objects) */
-    template<class CONTAINER>
-    explicit SymbolicFactorGraph(const CONTAINER& factors) : Base(factors) {}
+    template <class CONTAINER>
+    explicit SymbolicFactorGraph(const CONTAINER& factors) : Base(factors)
+    {
+    }
 
     /** Implicit copy/downcast constructor to override explicit template container constructor */
-    template<class DERIVEDFACTOR>
-    SymbolicFactorGraph(const FactorGraph<DERIVEDFACTOR>& graph) : Base(graph) {}
+    template <class DERIVEDFACTOR>
+    SymbolicFactorGraph(const FactorGraph<DERIVEDFACTOR>& graph) : Base(graph)
+    {
+    }
 
     /**
      * Constructor that takes an initializer list of shared pointers.
      *  FactorGraph fg = {make_shared<MyFactor>(), ...};
      */
-    SymbolicFactorGraph(
-        std::initializer_list<boost::shared_ptr<SymbolicFactor>> sharedFactors)
-        : Base(sharedFactors) {}
+    SymbolicFactorGraph(std::initializer_list<boost::shared_ptr<SymbolicFactor>> sharedFactors) : Base(sharedFactors)
+    {
+    }
 
     /// Construct from a single factor
-    SymbolicFactorGraph(SymbolicFactor&& c) {
+    SymbolicFactorGraph(SymbolicFactor&& c)
+    {
         push_back(boost::make_shared<SymbolicFactor>(c));
     }
 
@@ -106,13 +116,16 @@ namespace gtsam {
      *   SymbolicFactorGraph bn =
      *     SymbolicFactorGraph(SymbolicFactor(...))(SymbolicFactor(...));
      */
-    SymbolicFactorGraph& operator()(SymbolicFactor&& c) {
+    SymbolicFactorGraph& operator()(SymbolicFactor&& c)
+    {
         push_back(boost::make_shared<SymbolicFactor>(c));
         return *this;
     }
 
     /// Destructor
-    virtual ~SymbolicFactorGraph() {}
+    virtual ~SymbolicFactorGraph()
+    {
+    }
 
     /// @}
 
@@ -122,10 +135,10 @@ namespace gtsam {
     bool equals(const This& fg, double tol = 1e-9) const;
 
     /// print
-    void print(
-        const std::string& s = "SymbolicFactorGraph",
-        const KeyFormatter& formatter = DefaultKeyFormatter) const override {
-      Base::print(s, formatter);
+    void print(const std::string&  s         = "SymbolicFactorGraph",
+               const KeyFormatter& formatter = DefaultKeyFormatter) const override
+    {
+        Base::print(s, formatter);
     }
 
     /// @}
@@ -147,18 +160,20 @@ namespace gtsam {
 
     /// @}
 
-  private:
+private:
     /** Serialization function */
     friend class boost::serialization::access;
-    template<class ARCHIVE>
-    void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-      ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
     }
-  };
-
-/// traits
-template<>
-struct traits<SymbolicFactorGraph> : public Testable<SymbolicFactorGraph> {
 };
 
-} //\ namespace gtsam
+/// traits
+template <>
+struct traits<SymbolicFactorGraph> : public Testable<SymbolicFactorGraph>
+{
+};
+
+}  // namespace gtsam

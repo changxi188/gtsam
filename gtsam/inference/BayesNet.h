@@ -23,8 +23,8 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 
-namespace gtsam {
-
+namespace gtsam
+{
 class HybridValues;
 
 /**
@@ -32,74 +32,74 @@ class HybridValues;
  * @ingroup inference
  */
 template <class CONDITIONAL>
-class BayesNet : public FactorGraph<CONDITIONAL> {
- private:
-  typedef FactorGraph<CONDITIONAL> Base;
+class BayesNet : public FactorGraph<CONDITIONAL>
+{
+private:
+    typedef FactorGraph<CONDITIONAL> Base;
 
- public:
-  typedef typename boost::shared_ptr<CONDITIONAL>
-      sharedConditional;  ///< A shared pointer to a conditional
+public:
+    typedef typename boost::shared_ptr<CONDITIONAL> sharedConditional;  ///< A shared pointer to a conditional
 
- protected:
-  /// @name Protected Constructors
-  /// @{
+protected:
+    /// @name Protected Constructors
+    /// @{
 
-  /** Default constructor as an empty BayesNet */
-  BayesNet() {}
+    /** Default constructor as an empty BayesNet */
+    BayesNet()
+    {
+    }
 
-  /** Construct from iterator over conditionals */
-  template <typename ITERATOR>
-  BayesNet(ITERATOR firstConditional, ITERATOR lastConditional)
-      : Base(firstConditional, lastConditional) {}
+    /** Construct from iterator over conditionals */
+    template <typename ITERATOR>
+    BayesNet(ITERATOR firstConditional, ITERATOR lastConditional) : Base(firstConditional, lastConditional)
+    {
+    }
 
-  /**
-   * Constructor that takes an initializer list of shared pointers.
-   *  BayesNet<SymbolicConditional> bn = {make_shared<SymbolicConditional>(),
-   * ...};
-   */
-  BayesNet(std::initializer_list<sharedConditional> conditionals)
-      : Base(conditionals) {}
+    /**
+     * Constructor that takes an initializer list of shared pointers.
+     *  BayesNet<SymbolicConditional> bn = {make_shared<SymbolicConditional>(),
+     * ...};
+     */
+    BayesNet(std::initializer_list<sharedConditional> conditionals) : Base(conditionals)
+    {
+    }
 
-  /// @}
+    /// @}
 
- public:
-  /// @name Testable
-  /// @{
+public:
+    /// @name Testable
+    /// @{
 
-  /** print out graph */
-  void print(
-      const std::string& s = "BayesNet",
-      const KeyFormatter& formatter = DefaultKeyFormatter) const override;
+    /** print out graph */
+    void print(const std::string& s = "BayesNet", const KeyFormatter& formatter = DefaultKeyFormatter) const override;
 
-  /// @}
-  /// @name Graph Display
-  /// @{
+    /// @}
+    /// @name Graph Display
+    /// @{
 
-  /// Output to graphviz format, stream version.
-  void dot(std::ostream& os,
-           const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-           const DotWriter& writer = DotWriter()) const;
+    /// Output to graphviz format, stream version.
+    void dot(std::ostream& os, const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+             const DotWriter& writer = DotWriter()) const;
 
-  /// Output to graphviz format string.
-  std::string dot(const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-                  const DotWriter& writer = DotWriter()) const;
+    /// Output to graphviz format string.
+    std::string dot(const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+                    const DotWriter&    writer       = DotWriter()) const;
 
-  /// output to file with graphviz format.
-  void saveGraph(const std::string& filename,
-                 const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-                 const DotWriter& writer = DotWriter()) const;
+    /// output to file with graphviz format.
+    void saveGraph(const std::string& filename, const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+                   const DotWriter& writer = DotWriter()) const;
 
-  /// @}
-  /// @name HybridValues methods
-  /// @{
+    /// @}
+    /// @name HybridValues methods
+    /// @{
 
-  // Expose HybridValues version of logProbability.
-  double logProbability(const HybridValues& x) const;
+    // Expose HybridValues version of logProbability.
+    double logProbability(const HybridValues& x) const;
 
-  // Expose HybridValues version of evaluate.
-  double evaluate(const HybridValues& c) const;
+    // Expose HybridValues version of evaluate.
+    double evaluate(const HybridValues& c) const;
 
-  /// @}
+    /// @}
 };
 
 }  // namespace gtsam
