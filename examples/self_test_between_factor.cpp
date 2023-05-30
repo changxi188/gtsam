@@ -1,5 +1,6 @@
 #include <istream>
 
+#include <gtsam/base/debug.h>
 #include <gtsam/geometry/Pose3.h>
 #include <gtsam/inference/FactorGraph.h>
 #include <gtsam/inference/Symbol.h>
@@ -90,55 +91,82 @@ public:
 
 int main()
 {
-    gtsam::Symbol X1('X', 1);
-    gtsam::Symbol X2('X', 2);
-    gtsam::Symbol X3('X', 3);
-    gtsam::Pose3  wTb1(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_4 + 0.01), gtsam::Point3(1, 0, 0));
-    gtsam::Pose3  wTb2(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_2 + 0.02), gtsam::Point3(1, 0, 0));
+    SETDEBUG("ISAM2 update", true);
+    SETDEBUG("ISAM2 update verbose", true);
+    SETDEBUG("ISAM2 AddVariables", true);
+    SETDEBUG("ISAM2 recalculate", true);
+
+    // construct isam
+    gtsam::ISAM2Params parameters;
+    parameters.relinearizeThreshold  = 0.01;
+    parameters.relinearizeSkip       = 1;
+    parameters.enableDetailedResults = true;
+    parameters.print("isam2 parameters : ");
+    gtsam::ISAM2 isam(parameters);
+
+    // measurement
+    gtsam::Pose3::TangentVector noise;
+    noise << 0.01, 0.01, 0.01, 0.01, 0.01, 0.01;
+
+    // pose3 noise model
+    gtsam::noiseModel::Isotropic::shared_ptr noise_model = gtsam::noiseModel::Isotropic::Sigma(6, 0.01);
+
+    // ----------------------- first update --------------------
+    gtsam::Symbol      X1('X', 1);
+    gtsam::Symbol      X2('X', 2);
+    gtsam::Pose3       wTb1(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_4 + 0.01), gtsam::Point3(1, 0, 0));
+    gtsam::Pose3       wTb2(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_2 + 0.02), gtsam::Point3(2, 0, 0));
+    gtsam::Pose3       measure = wTb1.between(wTb2).expmap(noise);
+    Pose3BetweenFactor self_pose3_between_factor(X1, X2, measure, noise_model);
+    Pose3PriorFactor   self_prior_factor(X1, wTb1.expmap(noise), noise_model);
+    gtsam::PriorFactor<gtsam::Pose3> sys_prior_factor(X1, wTb1.expmap(noise), noise_model);
+    gtsam::NonlinearFactorGraph      factor_graph;
+    factor_graph.add(self_pose3_between_factor);
+    factor_graph.add(self_prior_factor);
 
     // initial values
     gtsam::Values values;
     values.insert<gtsam::Pose3>(X1, wTb1);
     values.insert<gtsam::Pose3>(X2, wTb2);
-    values.insert<gtsam::Pose3>(X3, wTb2);
-    values.print("all values : ");
-
-    // measurement
-    gtsam::Pose3::TangentVector noise;
-    noise << 0.01, 0.01, 0.01, 0.01, 0.01, 0.01;
-    gtsam::Pose3 measure = wTb1.between(wTb2).expmap(noise);
-
-    // pose3 noise model
-    gtsam::noiseModel::Isotropic::shared_ptr noise_model = gtsam::noiseModel::Isotropic::Sigma(6, 0.01);
-
-    // between factor
-    Pose3BetweenFactor self_pose3_between_factor(X1, X2, measure, noise_model);
-
-    // prior factor
-    Pose3PriorFactor                 self_prior_factor(X1, wTb1.expmap(noise), noise_model);
-    gtsam::PriorFactor<gtsam::Pose3> sys_prior_factor(X1, wTb1.expmap(noise), noise_model);
-
-    // factor graph with prior factor
-    gtsam::NonlinearFactorGraph factor_graph;
-    factor_graph.add(self_pose3_between_factor);
-    factor_graph.add(self_prior_factor);
-    // factor_graph.add(sys_prior_factor);
-
-    // construct isam
-    gtsam::ISAM2Params parameters;
-    parameters.relinearizeThreshold = 0.01;
-    parameters.relinearizeSkip      = 1;
-    parameters.print("isam2 parameters : ");
-    gtsam::ISAM2 isam(parameters);
-
     // isam2 update
     isam.update(factor_graph, values);
-    isam.update();
-    isam.update();
-
     // get isam2 estimate values
     gtsam::Values est_values = isam.calculateEstimate();
+    est_values.print("\nfirst_values : ");
 
-    est_values.print("est : ");
+    // ----------------------- sec update --------------------
+    gtsam::Symbol X3('X', 3);
+    gtsam::Values sec_values;
+    gtsam::Pose3  wTb3(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_4 + 0.02), gtsam::Point3(3, 0, 0));
+    sec_values.insert<gtsam::Pose3>(X3, wTb3);
+
+    gtsam::Pose3 sec_measure = wTb2.between(wTb3).expmap(noise);
+
+    gtsam::NonlinearFactorGraph sec_factor_graph;
+    Pose3BetweenFactor          sec_pose3_between_factor(X2, X3, sec_measure, noise_model);
+    sec_factor_graph.add(sec_pose3_between_factor);
+
+    isam.update(sec_factor_graph, sec_values);
+    gtsam::Values sec_est_values = isam.calculateEstimate();
+
+    sec_est_values.print("\nsec_est_values : ");
+
+    // ----------------------- third update --------------------
+    gtsam::Symbol X4('X', 4);
+    gtsam::Values third_values;
+    gtsam::Pose3  wTb4(gtsam::Rot3::AxisAngle(gtsam::Unit3(0, 0, 1), M_PI_4 + 0.02), gtsam::Point3(4, 0, 0));
+    third_values.insert<gtsam::Pose3>(X4, wTb4);
+
+    gtsam::Pose3 third_measure = wTb3.between(wTb4).expmap(noise);
+
+    gtsam::NonlinearFactorGraph third_factor_graph;
+    Pose3BetweenFactor          third_pose3_between_factor(X3, X4, third_measure, noise_model);
+    third_factor_graph.add(third_pose3_between_factor);
+
+    isam.update(third_factor_graph, third_values);
+    gtsam::Values third_est_values = isam.calculateEstimate();
+
+    third_est_values.print("\nthird_est_values : ");
+
     isam.saveGraph("./self_test_between_factor.dot");
 }

@@ -29,85 +29,97 @@
 #include <gtsam/linear/JacobianFactor.h>
 #include <gtsam/linear/VectorValues.h>
 
-namespace gtsam {
+namespace gtsam
+{
+// Forward declarations
+class GaussianFactorGraph;
+class GaussianFactor;
+class GaussianConditional;
+class GaussianBayesNet;
+class GaussianEliminationTree;
+class GaussianBayesTree;
+class GaussianJunctionTree;
 
-  // Forward declarations
-  class GaussianFactorGraph;
-  class GaussianFactor;
-  class GaussianConditional;
-  class GaussianBayesNet;
-  class GaussianEliminationTree;
-  class GaussianBayesTree;
-  class GaussianJunctionTree;
-
-  /* ************************************************************************* */
-  template<> struct EliminationTraits<GaussianFactorGraph>
-  {
-    typedef GaussianFactor FactorType;                   ///< Type of factors in factor graph
-    typedef GaussianFactorGraph FactorGraphType;         ///< Type of the factor graph (e.g. GaussianFactorGraph)
-    typedef GaussianConditional ConditionalType;         ///< Type of conditionals from elimination
-    typedef GaussianBayesNet BayesNetType;               ///< Type of Bayes net from sequential elimination
-    typedef GaussianEliminationTree EliminationTreeType; ///< Type of elimination tree
-    typedef GaussianBayesTree BayesTreeType;             ///< Type of Bayes tree
-    typedef GaussianJunctionTree JunctionTreeType;       ///< Type of Junction tree
+/* ************************************************************************* */
+template <>
+struct EliminationTraits<GaussianFactorGraph>
+{
+    typedef GaussianFactor          FactorType;           ///< Type of factors in factor graph
+    typedef GaussianFactorGraph     FactorGraphType;      ///< Type of the factor graph (e.g. GaussianFactorGraph)
+    typedef GaussianConditional     ConditionalType;      ///< Type of conditionals from elimination
+    typedef GaussianBayesNet        BayesNetType;         ///< Type of Bayes net from sequential elimination
+    typedef GaussianEliminationTree EliminationTreeType;  ///< Type of elimination tree
+    typedef GaussianBayesTree       BayesTreeType;        ///< Type of Bayes tree
+    typedef GaussianJunctionTree    JunctionTreeType;     ///< Type of Junction tree
     /// The default dense elimination function
     static std::pair<boost::shared_ptr<ConditionalType>, boost::shared_ptr<FactorType> >
-      DefaultEliminate(const FactorGraphType& factors, const Ordering& keys) {
-        return EliminatePreferCholesky(factors, keys); }
-    /// The default ordering generation function
-    static Ordering DefaultOrderingFunc(
-        const FactorGraphType& graph,
-        boost::optional<const VariableIndex&> variableIndex) {
-      return Ordering::Colamd(*variableIndex);
+    DefaultEliminate(const FactorGraphType& factors, const Ordering& keys)
+    {
+        return EliminatePreferCholesky(factors, keys);
     }
-  };
+    /// The default ordering generation function
+    static Ordering DefaultOrderingFunc(const FactorGraphType&                graph,
+                                        boost::optional<const VariableIndex&> variableIndex)
+    {
+        return Ordering::Colamd(*variableIndex);
+    }
+};
 
-  /* ************************************************************************* */
-  /**
-   * A Linear Factor Graph is a factor graph where all factors are Gaussian, i.e.
-   *   Factor == GaussianFactor
-   *   VectorValues = A values structure of vectors
-   * Most of the time, linear factor graphs arise by linearizing a non-linear factor graph.
-   */
-  class GTSAM_EXPORT GaussianFactorGraph :
-    public FactorGraph<GaussianFactor>,
-    public EliminateableFactorGraph<GaussianFactorGraph>
-  {
-  public:
-
-    typedef GaussianFactorGraph This; ///< Typedef to this class
-    typedef FactorGraph<GaussianFactor> Base; ///< Typedef to base factor graph type
-    typedef EliminateableFactorGraph<This> BaseEliminateable; ///< Typedef to base elimination class
-    typedef boost::shared_ptr<This> shared_ptr; ///< shared_ptr to this class
+/* ************************************************************************* */
+/**
+ * A Linear Factor Graph is a factor graph where all factors are Gaussian, i.e.
+ *   Factor == GaussianFactor
+ *   VectorValues = A values structure of vectors
+ * Most of the time, linear factor graphs arise by linearizing a non-linear factor graph.
+ */
+class GTSAM_EXPORT GaussianFactorGraph : public FactorGraph<GaussianFactor>,
+                                         public EliminateableFactorGraph<GaussianFactorGraph>
+{
+public:
+    typedef GaussianFactorGraph            This;               ///< Typedef to this class
+    typedef FactorGraph<GaussianFactor>    Base;               ///< Typedef to base factor graph type
+    typedef EliminateableFactorGraph<This> BaseEliminateable;  ///< Typedef to base elimination class
+    typedef boost::shared_ptr<This>        shared_ptr;         ///< shared_ptr to this class
 
     /// @name Constructors
     /// @{
-    
+
     /** Default constructor */
-    GaussianFactorGraph() {}
+    GaussianFactorGraph()
+    {
+    }
 
     /**
      * Construct from an initializer lists of GaussianFactor shared pointers.
      * Example:
      *   GaussianFactorGraph graph = { factor1, factor2, factor3 };
      */
-    GaussianFactorGraph(std::initializer_list<sharedFactor> factors) : Base(factors) {}
-    
+    GaussianFactorGraph(std::initializer_list<sharedFactor> factors) : Base(factors)
+    {
+    }
 
     /** Construct from iterator over factors */
-    template<typename ITERATOR>
-    GaussianFactorGraph(ITERATOR firstFactor, ITERATOR lastFactor) : Base(firstFactor, lastFactor) {}
+    template <typename ITERATOR>
+    GaussianFactorGraph(ITERATOR firstFactor, ITERATOR lastFactor) : Base(firstFactor, lastFactor)
+    {
+    }
 
     /** Construct from container of factors (shared_ptr or plain objects) */
-    template<class CONTAINER>
-    explicit GaussianFactorGraph(const CONTAINER& factors) : Base(factors) {}
+    template <class CONTAINER>
+    explicit GaussianFactorGraph(const CONTAINER& factors) : Base(factors)
+    {
+    }
 
     /** Implicit copy/downcast constructor to override explicit template container constructor */
-    template<class DERIVEDFACTOR>
-    GaussianFactorGraph(const FactorGraph<DERIVEDFACTOR>& graph) : Base(graph) {}
+    template <class DERIVEDFACTOR>
+    GaussianFactorGraph(const FactorGraph<DERIVEDFACTOR>& graph) : Base(graph)
+    {
+    }
 
     /** Virtual destructor */
-    virtual ~GaussianFactorGraph() {}
+    virtual ~GaussianFactorGraph()
+    {
+    }
 
     /// @}
     /// @name Testable
@@ -118,50 +130,62 @@ namespace gtsam {
     /// @}
 
     /// Check exact equality.
-    friend bool operator==(const GaussianFactorGraph& lhs,
-                            const GaussianFactorGraph& rhs) {
-      return lhs.isEqual(rhs);
+    friend bool operator==(const GaussianFactorGraph& lhs, const GaussianFactorGraph& rhs)
+    {
+        return lhs.isEqual(rhs);
     }
 
     /** Add a factor by value - makes a copy */
-    void add(const GaussianFactor& factor) { push_back(factor.clone()); }
+    void add(const GaussianFactor& factor)
+    {
+        push_back(factor.clone());
+    }
 
     /** Add a factor by pointer - stores pointer without copying the factor */
-    void add(const sharedFactor& factor) { push_back(factor); }
+    void add(const sharedFactor& factor)
+    {
+        push_back(factor);
+    }
 
     /** Add a null factor */
-    void add(const Vector& b) {
-      add(JacobianFactor(b)); }
+    void add(const Vector& b)
+    {
+        add(JacobianFactor(b));
+    }
 
     /** Add a unary factor */
-    void add(Key key1, const Matrix& A1,
-        const Vector& b, const SharedDiagonal& model = SharedDiagonal()) {
-      add(JacobianFactor(key1,A1,b,model)); }
+    void add(Key key1, const Matrix& A1, const Vector& b, const SharedDiagonal& model = SharedDiagonal())
+    {
+        add(JacobianFactor(key1, A1, b, model));
+    }
 
     /** Add a binary factor */
-    void add(Key key1, const Matrix& A1,
-        Key key2, const Matrix& A2,
-        const Vector& b, const SharedDiagonal& model = SharedDiagonal()) {
-      add(JacobianFactor(key1,A1,key2,A2,b,model)); }
+    void add(Key key1, const Matrix& A1, Key key2, const Matrix& A2, const Vector& b,
+             const SharedDiagonal& model = SharedDiagonal())
+    {
+        add(JacobianFactor(key1, A1, key2, A2, b, model));
+    }
 
     /** Add a ternary factor */
-    void add(Key key1, const Matrix& A1,
-        Key key2, const Matrix& A2,
-        Key key3, const Matrix& A3,
-        const Vector& b, const SharedDiagonal& model = SharedDiagonal()) {
-      add(JacobianFactor(key1,A1,key2,A2,key3,A3,b,model)); }
+    void add(Key key1, const Matrix& A1, Key key2, const Matrix& A2, Key key3, const Matrix& A3, const Vector& b,
+             const SharedDiagonal& model = SharedDiagonal())
+    {
+        add(JacobianFactor(key1, A1, key2, A2, key3, A3, b, model));
+    }
 
     /** Add an n-ary factor */
-    template<class TERMS>
-    void add(const TERMS& terms, const Vector &b, const SharedDiagonal& model = SharedDiagonal()) {
-      add(JacobianFactor(terms,b,model)); }
+    template <class TERMS>
+    void add(const TERMS& terms, const Vector& b, const SharedDiagonal& model = SharedDiagonal())
+    {
+        add(JacobianFactor(terms, b, model));
+    }
 
     /**
      * Return the set of variables involved in the factors (computes a set
      * union).
      */
     typedef KeySet Keys;
-    Keys keys() const;
+    Keys           keys() const;
 
     /* return a map of (Key, dimension) */
     std::map<Key, size_t> getKeyDimMap() const;
@@ -206,8 +230,8 @@ namespace gtsam {
      * @param[out] nrows The number of rows in the augmented Jacobian
      * @param[out] ncols The number of columns in the augmented Jacobian
      */
-    std::vector<std::tuple<int, int, double> > sparseJacobian(
-        const Ordering& ordering, size_t& nrows, size_t& ncols) const;
+    std::vector<std::tuple<int, int, double> > sparseJacobian(const Ordering& ordering, size_t& nrows,
+                                                              size_t& ncols) const;
 
     /** Returns a sparse augmented Jacobian matrix with default ordering */
     std::vector<std::tuple<int, int, double> > sparseJacobian() const;
@@ -228,7 +252,7 @@ namespace gtsam {
      * GaussianFactorGraph::jacobian and GaussianFactorGraph::sparseJacobian.
      */
     Matrix augmentedJacobian(const Ordering& ordering) const;
-    
+
     /**
      * Return a dense \f$ [ \;A\;b\; ] \in \mathbb{R}^{m \times n+1} \f$
      * Jacobian matrix, augmented with b with the noise models baked
@@ -245,7 +269,7 @@ namespace gtsam {
      * GaussianFactorGraph::augmentedJacobian and
      * GaussianFactorGraph::sparseJacobian.
      */
-    std::pair<Matrix,Vector> jacobian(const Ordering& ordering) const;
+    std::pair<Matrix, Vector> jacobian(const Ordering& ordering) const;
 
     /**
      * Return the dense Jacobian \f$ A \f$ and right-hand-side \f$ b \f$,
@@ -254,7 +278,7 @@ namespace gtsam {
      * GaussianFactorGraph::augmentedJacobian and
      * GaussianFactorGraph::sparseJacobian.
      */
-    std::pair<Matrix,Vector> jacobian() const;
+    std::pair<Matrix, Vector> jacobian() const;
 
     /**
      * Return a dense \f$ \Lambda \in \mathbb{R}^{n+1 \times n+1} \f$ Hessian
@@ -288,7 +312,7 @@ namespace gtsam {
      * is \frac{1}{2} x^T \Lambda x + \eta^T x + c.  See also
      * GaussianFactorGraph::augmentedHessian.
      */
-    std::pair<Matrix,Vector> hessian(const Ordering& ordering) const;
+    std::pair<Matrix, Vector> hessian(const Ordering& ordering) const;
 
     /**
      * Return the dense Hessian \f$ \Lambda \f$ and information vector
@@ -296,27 +320,25 @@ namespace gtsam {
      * is \frac{1}{2} x^T \Lambda x + \eta^T x + c.  See also
      * GaussianFactorGraph::augmentedHessian.
      */
-    std::pair<Matrix,Vector> hessian() const;
+    std::pair<Matrix, Vector> hessian() const;
 
     /** Return only the diagonal of the Hessian A'*A, as a VectorValues */
     virtual VectorValues hessianDiagonal() const;
 
     /** Return the block diagonal of the Hessian for this factor */
-    virtual std::map<Key,Matrix> hessianBlockDiagonal() const;
+    virtual std::map<Key, Matrix> hessianBlockDiagonal() const;
 
     /** Solve the factor graph by performing multifrontal variable elimination in COLAMD order using
      *  the dense elimination function specified in \c function (default EliminatePreferCholesky),
      *  followed by back-substitution in the Bayes tree resulting from elimination.  Is equivalent
      *  to calling graph.eliminateMultifrontal()->optimize(). */
-    VectorValues optimize(
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate) const;
+    VectorValues optimize(const Eliminate& function = EliminationTraitsType::DefaultEliminate) const;
 
     /** Solve the factor graph by performing multifrontal variable elimination in COLAMD order using
      *  the dense elimination function specified in \c function (default EliminatePreferCholesky),
      *  followed by back-substitution in the Bayes tree resulting from elimination.  Is equivalent
      *  to calling graph.eliminateMultifrontal()->optimize(). */
-    VectorValues optimize(const Ordering&,
-      const Eliminate& function = EliminationTraitsType::DefaultEliminate) const;
+    VectorValues optimize(const Ordering&, const Eliminate& function = EliminationTraitsType::DefaultEliminate) const;
 
     /**
      * Optimize using Eigen's dense Cholesky factorization
@@ -382,8 +404,7 @@ namespace gtsam {
     Errors operator*(const VectorValues& x) const;
 
     ///** y += alpha*A'A*x */
-    void multiplyHessianAdd(double alpha, const VectorValues& x,
-        VectorValues& y) const;
+    void multiplyHessianAdd(double alpha, const VectorValues& x, VectorValues& y) const;
 
     ///** In-place version e <- A*x that overwrites e. */
     void multiplyInPlace(const VectorValues& x, Errors& e) const;
@@ -391,52 +412,48 @@ namespace gtsam {
     /** In-place version e <- A*x that takes an iterator. */
     void multiplyInPlace(const VectorValues& x, const Errors::iterator& e) const;
 
-    void printErrors(
-        const VectorValues& x,
-        const std::string& str = "GaussianFactorGraph: ",
-        const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-        const std::function<bool(const Factor* /*factor*/,
-                                 double /*whitenedError*/, size_t /*index*/)>&
-            printCondition =
-                [](const Factor*, double, size_t) { return true; }) const;
+    void printErrors(const VectorValues& x, const std::string& str = "GaussianFactorGraph: ",
+                     const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+                     const std::function<bool(const Factor* /*factor*/, double /*whitenedError*/, size_t /*index*/)>&
+                         printCondition = [](const Factor*, double, size_t) { return true; }) const;
     /// @}
 
-  private:
+private:
     /** Serialization function */
     friend class boost::serialization::access;
-    template<class ARCHIVE>
-    void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-      ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
     }
 
-  public:
-
+public:
 #ifdef GTSAM_ALLOW_DEPRECATED_SINCE_V42
-   /** @deprecated */
-   VectorValues GTSAM_DEPRECATED
-   optimize(boost::none_t, const Eliminate& function =
-                               EliminationTraitsType::DefaultEliminate) const {
-     return optimize(function);
-   }
+    /** @deprecated */
+    VectorValues GTSAM_DEPRECATED optimize(boost::none_t,
+                                           const Eliminate& function = EliminationTraitsType::DefaultEliminate) const
+    {
+        return optimize(function);
+    }
 #endif
-
-  };
-
-  /**
-   * Evaluates whether linear factors have any constrained noise models
-   * @return true if any factor is constrained.
-   */
-  GTSAM_EXPORT bool hasConstraints(const GaussianFactorGraph& factors);
-
-  /****** Linear Algebra Operations ******/
-
-  ///* matrix-vector operations */
-  //GTSAM_EXPORT void residual(const GaussianFactorGraph& fg, const VectorValues &x, VectorValues &r);
-  //GTSAM_EXPORT void multiply(const GaussianFactorGraph& fg, const VectorValues &x, VectorValues &r);
-
-/// traits
-template<>
-struct traits<GaussianFactorGraph> : public Testable<GaussianFactorGraph> {
 };
 
-} // \ namespace gtsam
+/**
+ * Evaluates whether linear factors have any constrained noise models
+ * @return true if any factor is constrained.
+ */
+GTSAM_EXPORT bool hasConstraints(const GaussianFactorGraph& factors);
+
+/****** Linear Algebra Operations ******/
+
+///* matrix-vector operations */
+// GTSAM_EXPORT void residual(const GaussianFactorGraph& fg, const VectorValues &x, VectorValues &r);
+// GTSAM_EXPORT void multiply(const GaussianFactorGraph& fg, const VectorValues &x, VectorValues &r);
+
+/// traits
+template <>
+struct traits<GaussianFactorGraph> : public Testable<GaussianFactorGraph>
+{
+};
+
+}  // namespace gtsam

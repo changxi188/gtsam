@@ -20,52 +20,56 @@
 
 #pragma once
 
-#include <gtsam/inference/Factor.h>
 #include <gtsam/base/Matrix.h>
 #include <gtsam/base/Testable.h>
+#include <gtsam/inference/Factor.h>
 
-namespace gtsam {
+namespace gtsam
+{
+// Forward declarations
+class VectorValues;
+class Scatter;
+class SymmetricBlockMatrix;
 
-  // Forward declarations
-  class VectorValues;
-  class Scatter;
-  class SymmetricBlockMatrix;
-
-  /**
-   * An abstract virtual base class for JacobianFactor and HessianFactor. A GaussianFactor has a
-   * quadratic error function. GaussianFactor is non-mutable (all methods const!). The factor value
-   * is exp(-0.5*||Ax-b||^2) */
-  class GTSAM_EXPORT GaussianFactor : public Factor
-  {
-  public:
-    typedef GaussianFactor This; ///< This class
-    typedef boost::shared_ptr<This> shared_ptr; ///< shared_ptr to this class
-    typedef Factor Base; ///< Our base class
+/**
+ * An abstract virtual base class for JacobianFactor and HessianFactor. A GaussianFactor has a
+ * quadratic error function. GaussianFactor is non-mutable (all methods const!). The factor value
+ * is exp(-0.5*||Ax-b||^2) */
+class GTSAM_EXPORT GaussianFactor : public Factor
+{
+public:
+    typedef GaussianFactor          This;        ///< This class
+    typedef boost::shared_ptr<This> shared_ptr;  ///< shared_ptr to this class
+    typedef Factor                  Base;        ///< Our base class
 
     /** Default constructor creates empty factor */
-    GaussianFactor() {}
+    GaussianFactor()
+    {
+    }
 
     /** Construct from container of keys.  This constructor is used internally from derived factor
      *  constructors, either from a container of keys or from a boost::assign::list_of. */
-    template<typename CONTAINER>
-    GaussianFactor(const CONTAINER& keys) : Base(keys) {}
+    template <typename CONTAINER>
+    GaussianFactor(const CONTAINER& keys) : Base(keys)
+    {
+    }
 
     /** Destructor */
-    virtual ~GaussianFactor() {}
+    virtual ~GaussianFactor()
+    {
+    }
 
     // Implementing Testable interface
 
     /// print
-    void print(
-        const std::string& s = "",
-        const KeyFormatter& formatter = DefaultKeyFormatter) const override = 0;
+    void print(const std::string& s = "", const KeyFormatter& formatter = DefaultKeyFormatter) const override = 0;
 
     /** Equals for testable */
     virtual bool equals(const GaussianFactor& lf, double tol = 1e-9) const = 0;
 
     /**
      * In Gaussian factors, the error function returns either the negative log-likelihood, e.g.,
-     *   0.5*(A*x-b)'*D*(A*x-b) 
+     *   0.5*(A*x-b)'*D*(A*x-b)
      * for a \class JacobianFactor, or the negative log-density, e.g.,
      *   0.5*(A*x-b)'*D*(A*x-b) - log(k)
      * for a \class GaussianConditional, where k is the normalization constant.
@@ -97,7 +101,7 @@ namespace gtsam {
      * GaussianFactorGraph::augmentedJacobian and
      * GaussianFactorGraph::sparseJacobian.
      */
-    virtual std::pair<Matrix,Vector> jacobian() const = 0;
+    virtual std::pair<Matrix, Vector> jacobian() const = 0;
 
     /** Return the augmented information matrix represented by this GaussianFactor.
      * The augmented information matrix contains the information matrix with an
@@ -124,7 +128,7 @@ namespace gtsam {
     virtual void hessianDiagonal(double* d) const = 0;
 
     /// Return the block diagonal of the Hessian for this factor
-    virtual std::map<Key,Matrix> hessianBlockDiagonal() const = 0;
+    virtual std::map<Key, Matrix> hessianBlockDiagonal() const = 0;
 
     /** Clone a factor (make a deep copy) */
     virtual GaussianFactor::shared_ptr clone() const = 0;
@@ -141,8 +145,7 @@ namespace gtsam {
      * @param scatter A mapping from variable index to slot index in this HessianFactor
      * @param info The information matrix to be updated
      */
-    virtual void updateHessian(const KeyVector& keys,
-                           SymmetricBlockMatrix* info) const = 0;
+    virtual void updateHessian(const KeyVector& keys, SymmetricBlockMatrix* info) const = 0;
 
     /// y += alpha * A'*A*x
     virtual void multiplyHessianAdd(double alpha, const VectorValues& x, VectorValues& y) const = 0;
@@ -158,23 +161,26 @@ namespace gtsam {
 
     // Determine position of a given key
     template <typename CONTAINER>
-    static DenseIndex Slot(const CONTAINER& keys, Key key) {
-      return std::find(keys.begin(), keys.end(), key) - keys.begin();
+    static DenseIndex Slot(const CONTAINER& keys, Key key)
+    {
+        return std::find(keys.begin(), keys.end(), key) - keys.begin();
     }
 
-  private:
+private:
     /** Serialization function */
     friend class boost::serialization::access;
-    template<class ARCHIVE>
-    void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-      ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
     }
 
-  }; // GaussianFactor
+};  // GaussianFactor
 
 /// traits
-template<>
-struct traits<GaussianFactor> : public Testable<GaussianFactor> {
+template <>
+struct traits<GaussianFactor> : public Testable<GaussianFactor>
+{
 };
 
-} // \ namespace gtsam
+}  // namespace gtsam

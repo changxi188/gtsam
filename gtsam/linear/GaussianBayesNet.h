@@ -20,59 +20,63 @@
 
 #pragma once
 
-#include <gtsam/linear/GaussianConditional.h>
+#include <gtsam/global_includes.h>
 #include <gtsam/inference/BayesNet.h>
 #include <gtsam/inference/FactorGraph.h>
-#include <gtsam/global_includes.h>
+#include <gtsam/linear/GaussianConditional.h>
 
 #include <utility>
-namespace gtsam {
-
-  /** 
-   * GaussianBayesNet is a Bayes net made from linear-Gaussian conditionals.
-   * @ingroup linear
-   */
-  class GTSAM_EXPORT GaussianBayesNet: public BayesNet<GaussianConditional>
-  {
-  public:
-
-    typedef BayesNet<GaussianConditional> Base;
-    typedef GaussianBayesNet This;
-    typedef GaussianConditional ConditionalType;
-    typedef boost::shared_ptr<This> shared_ptr;
+namespace gtsam
+{
+/**
+ * GaussianBayesNet is a Bayes net made from linear-Gaussian conditionals.
+ * @ingroup linear
+ */
+class GTSAM_EXPORT GaussianBayesNet : public BayesNet<GaussianConditional>
+{
+public:
+    typedef BayesNet<GaussianConditional>      Base;
+    typedef GaussianBayesNet                   This;
+    typedef GaussianConditional                ConditionalType;
+    typedef boost::shared_ptr<This>            shared_ptr;
     typedef boost::shared_ptr<ConditionalType> sharedConditional;
 
     /// @name Standard Constructors
     /// @{
 
     /** Construct empty bayes net */
-    GaussianBayesNet() {}
+    GaussianBayesNet()
+    {
+    }
 
     /** Construct from iterator over conditionals */
     template <typename ITERATOR>
-    GaussianBayesNet(ITERATOR firstConditional, ITERATOR lastConditional)
-        : Base(firstConditional, lastConditional) {}
+    GaussianBayesNet(ITERATOR firstConditional, ITERATOR lastConditional) : Base(firstConditional, lastConditional)
+    {
+    }
 
     /** Construct from container of factors (shared_ptr or plain objects) */
     template <class CONTAINER>
-    explicit GaussianBayesNet(const CONTAINER& conditionals) {
-      push_back(conditionals);
+    explicit GaussianBayesNet(const CONTAINER& conditionals)
+    {
+        push_back(conditionals);
     }
 
     /** Implicit copy/downcast constructor to override explicit template
      * container constructor */
     template <class DERIVEDCONDITIONAL>
-    explicit GaussianBayesNet(const FactorGraph<DERIVEDCONDITIONAL>& graph)
-        : Base(graph) {}
+    explicit GaussianBayesNet(const FactorGraph<DERIVEDCONDITIONAL>& graph) : Base(graph)
+    {
+    }
 
     /**
      * Constructor that takes an initializer list of shared pointers.
      *  BayesNet bn = {make_shared<Conditional>(), ...};
      */
     template <class DERIVEDCONDITIONAL>
-    GaussianBayesNet(
-        std::initializer_list<boost::shared_ptr<DERIVEDCONDITIONAL> > conditionals)
-        : Base(conditionals) {}
+    GaussianBayesNet(std::initializer_list<boost::shared_ptr<DERIVEDCONDITIONAL> > conditionals) : Base(conditionals)
+    {
+    }
 
     /// Destructor
     virtual ~GaussianBayesNet() = default;
@@ -86,10 +90,9 @@ namespace gtsam {
     bool equals(const This& bn, double tol = 1e-9) const;
 
     /// print graph
-    void print(
-        const std::string& s = "",
-        const KeyFormatter& formatter = DefaultKeyFormatter) const override {
-      Base::print(s, formatter);
+    void print(const std::string& s = "", const KeyFormatter& formatter = DefaultKeyFormatter) const override
+    {
+        Base::print(s, formatter);
     }
 
     /// @}
@@ -111,8 +114,9 @@ namespace gtsam {
     double evaluate(const VectorValues& x) const;
 
     /// Evaluate probability density, sugar.
-    double operator()(const VectorValues& x) const {
-      return evaluate(x);
+    double operator()(const VectorValues& x) const
+    {
+        return evaluate(x);
     }
 
     /// Solve the GaussianBayesNet, i.e. return \f$ x = R^{-1}*d \f$, by
@@ -249,24 +253,26 @@ namespace gtsam {
     /// @name HybridValues methods.
     /// @{
 
-    using Base::evaluate; // Expose evaluate(const HybridValues&) method..
-    using Base::logProbability; // Expose logProbability(const HybridValues&) method..
-    using Base::error; // Expose error(const HybridValues&) method..
+    using Base::error;           // Expose error(const HybridValues&) method..
+    using Base::evaluate;        // Expose evaluate(const HybridValues&) method..
+    using Base::logProbability;  // Expose logProbability(const HybridValues&) method..
 
     /// @}
 
-  private:
+private:
     /** Serialization function */
     friend class boost::serialization::access;
-    template<class ARCHIVE>
-    void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-      ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP(Base);
     }
-  };
+};
 
-  /// traits
-  template<>
-  struct traits<GaussianBayesNet> : public Testable<GaussianBayesNet> {
-  };
+/// traits
+template <>
+struct traits<GaussianBayesNet> : public Testable<GaussianBayesNet>
+{
+};
 
-} //\ namespace gtsam
+}  // namespace gtsam
