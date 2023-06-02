@@ -19,26 +19,28 @@
 #include <gtsam/inference/EliminationTree-inst.h>
 #include <gtsam/linear/GaussianEliminationTree.h>
 
-namespace gtsam {
+namespace gtsam
+{
+// Instantiate base class
+template class EliminationTree<GaussianBayesNet, GaussianFactorGraph>;
 
-  // Instantiate base class
-  template class EliminationTree<GaussianBayesNet, GaussianFactorGraph>;
-
-  /* ************************************************************************* */
-  GaussianEliminationTree::GaussianEliminationTree(
-    const GaussianFactorGraph& factorGraph, const VariableIndex& structure,
-    const Ordering& order) :
-  Base(factorGraph, structure, order) {}
-
-  /* ************************************************************************* */
-  GaussianEliminationTree::GaussianEliminationTree(
-    const GaussianFactorGraph& factorGraph, const Ordering& order) :
-  Base(factorGraph, order) {}
-
-  /* ************************************************************************* */
-  bool GaussianEliminationTree::equals(const This& other, double tol) const
-  {
-    return Base::equals(other, tol);
-  }
-
+/* ************************************************************************* */
+GaussianEliminationTree::GaussianEliminationTree(const GaussianFactorGraph& factorGraph, const VariableIndex& structure,
+                                                 const Ordering& order)
+  : Base(factorGraph, structure, order)
+{
 }
+
+/* ************************************************************************* */
+GaussianEliminationTree::GaussianEliminationTree(const GaussianFactorGraph& factorGraph, const Ordering& order)
+  : Base(factorGraph, order)
+{
+}
+
+/* ************************************************************************* */
+bool GaussianEliminationTree::equals(const This& other, double tol) const
+{
+    return Base::equals(other, tol);
+}
+
+}  // namespace gtsam

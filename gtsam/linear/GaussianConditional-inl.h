@@ -19,18 +19,22 @@
 
 #pragma once
 
-namespace gtsam {
+namespace gtsam
+{
+/* ************************************************************************* */
+template <typename TERMS>
+GaussianConditional::GaussianConditional(const TERMS& terms, size_t nrFrontals, const Vector& d,
+                                         const SharedDiagonal& sigmas)
+  : BaseFactor(terms, d, sigmas), BaseConditional(nrFrontals)
+{
+}
 
-  /* ************************************************************************* */
-  template<typename TERMS>
-  GaussianConditional::GaussianConditional(const TERMS& terms,
-    size_t nrFrontals, const Vector& d, const SharedDiagonal& sigmas) :
-  BaseFactor(terms, d, sigmas), BaseConditional(nrFrontals) {}
+/* ************************************************************************* */
+template <typename KEYS>
+GaussianConditional::GaussianConditional(const KEYS& keys, size_t nrFrontals,
+                                         const VerticalBlockMatrix& augmentedMatrix, const SharedDiagonal& sigmas)
+  : BaseFactor(keys, augmentedMatrix, sigmas), BaseConditional(nrFrontals)
+{
+}
 
-  /* ************************************************************************* */
-  template<typename KEYS>
-  GaussianConditional::GaussianConditional(
-    const KEYS& keys, size_t nrFrontals, const VerticalBlockMatrix& augmentedMatrix, const SharedDiagonal& sigmas) :
-  BaseFactor(keys, augmentedMatrix, sigmas), BaseConditional(nrFrontals) {}
-
-} // gtsam
+}  // namespace gtsam

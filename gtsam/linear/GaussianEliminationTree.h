@@ -18,46 +18,42 @@
 
 #pragma once
 
+#include <gtsam/inference/EliminationTree.h>
 #include <gtsam/linear/GaussianBayesNet.h>
 #include <gtsam/linear/GaussianFactorGraph.h>
-#include <gtsam/inference/EliminationTree.h>
 
-namespace gtsam {
-
-  class GTSAM_EXPORT GaussianEliminationTree :
-    public EliminationTree<GaussianBayesNet, GaussianFactorGraph>
-  {
-  public:
-    typedef EliminationTree<GaussianBayesNet, GaussianFactorGraph> Base; ///< Base class
-    typedef GaussianEliminationTree This; ///< This class
-    typedef boost::shared_ptr<This> shared_ptr; ///< Shared pointer to this class
+namespace gtsam
+{
+class GTSAM_EXPORT GaussianEliminationTree : public EliminationTree<GaussianBayesNet, GaussianFactorGraph>
+{
+public:
+    typedef EliminationTree<GaussianBayesNet, GaussianFactorGraph> Base;        ///< Base class
+    typedef GaussianEliminationTree                                This;        ///< This class
+    typedef boost::shared_ptr<This>                                shared_ptr;  ///< Shared pointer to this class
 
     /**
-    * Build the elimination tree of a factor graph using pre-computed column structure.
-    * @param factorGraph The factor graph for which to build the elimination tree
-    * @param structure The set of factors involving each variable.  If this is not
-    * precomputed, you can call the Create(const FactorGraph<DERIVEDFACTOR>&)
-    * named constructor instead.
-    * @return The elimination tree
-    */
-    GaussianEliminationTree(const GaussianFactorGraph& factorGraph,
-      const VariableIndex& structure, const Ordering& order);
+     * Build the elimination tree of a factor graph using pre-computed column structure.
+     * @param factorGraph The factor graph for which to build the elimination tree
+     * @param structure The set of factors involving each variable.  If this is not
+     * precomputed, you can call the Create(const FactorGraph<DERIVEDFACTOR>&)
+     * named constructor instead.
+     * @return The elimination tree
+     */
+    GaussianEliminationTree(const GaussianFactorGraph& factorGraph, const VariableIndex& structure,
+                            const Ordering& order);
 
     /** Build the elimination tree of a factor graph.  Note that this has to compute the column
-    * structure as a VariableIndex, so if you already have this precomputed, use the other
-    * constructor instead.
-    * @param factorGraph The factor graph for which to build the elimination tree
-    */
-    GaussianEliminationTree(const GaussianFactorGraph& factorGraph,
-      const Ordering& order);
+     * structure as a VariableIndex, so if you already have this precomputed, use the other
+     * constructor instead.
+     * @param factorGraph The factor graph for which to build the elimination tree
+     */
+    GaussianEliminationTree(const GaussianFactorGraph& factorGraph, const Ordering& order);
 
     /** Test whether the tree is equal to another */
     bool equals(const This& other, double tol = 1e-9) const;
 
-  private:
-
+private:
     friend class ::EliminationTreeTester;
+};
 
-  };
-
-}
+}  // namespace gtsam

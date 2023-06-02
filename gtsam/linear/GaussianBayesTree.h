@@ -19,46 +19,52 @@
 
 #pragma once
 
-#include <gtsam/linear/GaussianBayesNet.h>
-#include <gtsam/linear/GaussianFactorGraph.h>
 #include <gtsam/inference/BayesTree.h>
 #include <gtsam/inference/BayesTreeCliqueBase.h>
+#include <gtsam/linear/GaussianBayesNet.h>
+#include <gtsam/linear/GaussianFactorGraph.h>
 
-namespace gtsam {
+namespace gtsam
+{
+// Forward declarations
+class GaussianConditional;
+class VectorValues;
 
-  // Forward declarations
-  class GaussianConditional;
-  class VectorValues;
-
-  /* ************************************************************************* */
-  /** A clique in a GaussianBayesTree */
-  class GTSAM_EXPORT GaussianBayesTreeClique :
-    public BayesTreeCliqueBase<GaussianBayesTreeClique, GaussianFactorGraph>
-  {
-  public:
-    typedef GaussianBayesTreeClique This;
+/* ************************************************************************* */
+/** A clique in a GaussianBayesTree */
+class GTSAM_EXPORT GaussianBayesTreeClique : public BayesTreeCliqueBase<GaussianBayesTreeClique, GaussianFactorGraph>
+{
+public:
+    typedef GaussianBayesTreeClique                                           This;
     typedef BayesTreeCliqueBase<GaussianBayesTreeClique, GaussianFactorGraph> Base;
-    typedef boost::shared_ptr<This> shared_ptr;
-    typedef boost::weak_ptr<This> weak_ptr;
-    GaussianBayesTreeClique() {}
-    virtual ~GaussianBayesTreeClique() {}
-    GaussianBayesTreeClique(const boost::shared_ptr<GaussianConditional>& conditional) : Base(conditional) {}
-  };
+    typedef boost::shared_ptr<This>                                           shared_ptr;
+    typedef boost::weak_ptr<This>                                             weak_ptr;
+    GaussianBayesTreeClique()
+    {
+    }
+    virtual ~GaussianBayesTreeClique()
+    {
+    }
+    GaussianBayesTreeClique(const boost::shared_ptr<GaussianConditional>& conditional) : Base(conditional)
+    {
+    }
+};
 
-  /* ************************************************************************* */
-  /** A Bayes tree representing a Gaussian density */
-  class GTSAM_EXPORT GaussianBayesTree :
-    public BayesTree<GaussianBayesTreeClique>
-  {
-  private:
+/* ************************************************************************* */
+/** A Bayes tree representing a Gaussian density */
+class GTSAM_EXPORT GaussianBayesTree : public BayesTree<GaussianBayesTreeClique>
+{
+private:
     typedef BayesTree<GaussianBayesTreeClique> Base;
 
-  public:
-    typedef GaussianBayesTree This;
+public:
+    typedef GaussianBayesTree       This;
     typedef boost::shared_ptr<This> shared_ptr;
 
     /** Default constructor, creates an empty Bayes tree */
-    GaussianBayesTree() {}
+    GaussianBayesTree()
+    {
+    }
 
     /** Check equality */
     bool equals(const This& other, double tol = 1e-9) const;
@@ -125,13 +131,14 @@ namespace gtsam {
     double logDeterminant() const;
 
     /** Return the marginal on the requested variable as a covariance matrix.  See also
-    *   marginalFactor(). */
+     *   marginalFactor(). */
     Matrix marginalCovariance(Key key) const;
-  };
+};
 
-  /// traits
-  template<>
-  struct traits<GaussianBayesTree> : public Testable<GaussianBayesTree> {
-  };
+/// traits
+template <>
+struct traits<GaussianBayesTree> : public Testable<GaussianBayesTree>
+{
+};
 
-} //\ namespace gtsam
+}  // namespace gtsam
