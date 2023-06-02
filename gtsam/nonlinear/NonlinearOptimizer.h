@@ -21,9 +21,13 @@
 #include <gtsam/nonlinear/NonlinearFactorGraph.h>
 #include <gtsam/nonlinear/NonlinearOptimizerParams.h>
 
-namespace gtsam {
+namespace gtsam
+{
 
-namespace internal { struct NonlinearOptimizerState; }
+namespace internal
+{
+struct NonlinearOptimizerState;
+}
 
 /**
  * This is the abstract interface for classes that can optimize for the
@@ -72,93 +76,97 @@ Values result = DoglegOptimizer(graph, initialValues, params).optimize();
  *
  * For more flexibility you may override virtual methods in your own derived class.
  */
-class GTSAM_EXPORT NonlinearOptimizer {
-
+class GTSAM_EXPORT NonlinearOptimizer
+{
 protected:
-  NonlinearFactorGraph graph_; ///< The graph with nonlinear factors
+    NonlinearFactorGraph graph_;  ///< The graph with nonlinear factors
 
-  std::unique_ptr<internal::NonlinearOptimizerState> state_; ///< PIMPL'd state
+    std::unique_ptr<internal::NonlinearOptimizerState> state_;  ///< PIMPL'd state
 
 public:
-  /** A shared pointer to this class */
-  using shared_ptr = boost::shared_ptr<const NonlinearOptimizer>;
+    /** A shared pointer to this class */
+    using shared_ptr = boost::shared_ptr<const NonlinearOptimizer>;
 
-  /// @name Standard interface
-  /// @{
+    /// @name Standard interface
+    /// @{
 
-  /** 
-   * Optimize for the maximum-likelihood estimate, returning a the optimized 
-   * variable assignments.
-   *
-   * This function simply calls iterate() in a loop, checking for convergence
-   * with check_convergence().  For fine-grain control over the optimization
-   * process, you may call iterate() and check_convergence() yourself, and if
-   * needed modify the optimization state between iterations.
-   */
-  virtual const Values& optimize() { defaultOptimize(); return values(); }
+    /**
+     * Optimize for the maximum-likelihood estimate, returning a the optimized
+     * variable assignments.
+     *
+     * This function simply calls iterate() in a loop, checking for convergence
+     * with check_convergence().  For fine-grain control over the optimization
+     * process, you may call iterate() and check_convergence() yourself, and if
+     * needed modify the optimization state between iterations.
+     */
+    virtual const Values& optimize()
+    {
+        defaultOptimize();
+        return values();
+    }
 
-  /**
-   * Optimize, but return empty result if any uncaught exception is thrown
-   * Intended for MATLAB. In C++, use above and catch exceptions.
-   * No message is printed: it is up to the caller to check the result
-   * @param optimizer a non-linear optimizer
-   */
-  const Values& optimizeSafely();
+    /**
+     * Optimize, but return empty result if any uncaught exception is thrown
+     * Intended for MATLAB. In C++, use above and catch exceptions.
+     * No message is printed: it is up to the caller to check the result
+     * @param optimizer a non-linear optimizer
+     */
+    const Values& optimizeSafely();
 
-  /// return error in current optimizer state
-  double error() const;
+    /// return error in current optimizer state
+    double error() const;
 
-  /// return number of iterations in current optimizer state
-  size_t iterations() const;
+    /// return number of iterations in current optimizer state
+    size_t iterations() const;
 
-  /// return values in current optimizer state
-  const Values &values() const;
+    /// return values in current optimizer state
+    const Values& values() const;
 
-  /// return the graph with nonlinear factors
-  const NonlinearFactorGraph &graph() const { return graph_; }
+    /// return the graph with nonlinear factors
+    const NonlinearFactorGraph& graph() const
+    {
+        return graph_;
+    }
 
-  /// @}
+    /// @}
 
-  /// @name Advanced interface
-  /// @{
+    /// @name Advanced interface
+    /// @{
 
-  /** Virtual destructor */
-  virtual ~NonlinearOptimizer();
+    /** Virtual destructor */
+    virtual ~NonlinearOptimizer();
 
-  /** Default function to do linear solve, i.e. optimize a GaussianFactorGraph */
-  virtual VectorValues solve(const GaussianFactorGraph &gfg,
-      const NonlinearOptimizerParams& params) const;
+    /** Default function to do linear solve, i.e. optimize a GaussianFactorGraph */
+    virtual VectorValues solve(const GaussianFactorGraph& gfg, const NonlinearOptimizerParams& params) const;
 
-  /** 
-   * Perform a single iteration, returning GaussianFactorGraph corresponding to 
-   * the linearized factor graph.
-   */
-  virtual GaussianFactorGraph::shared_ptr iterate() = 0;
+    /**
+     * Perform a single iteration, returning GaussianFactorGraph corresponding to
+     * the linearized factor graph.
+     */
+    virtual GaussianFactorGraph::shared_ptr iterate() = 0;
 
-  /// @}
+    /// @}
 
 protected:
-  /** A default implementation of the optimization loop, which calls iterate()
-   * until checkConvergence returns true.
-   */
-  void defaultOptimize();
+    /** A default implementation of the optimization loop, which calls iterate()
+     * until checkConvergence returns true.
+     */
+    void defaultOptimize();
 
-  virtual const NonlinearOptimizerParams& _params() const = 0;
+    virtual const NonlinearOptimizerParams& _params() const = 0;
 
-  /** Constructor for initial construction of base classes. Takes ownership of state. */
-  NonlinearOptimizer(const NonlinearFactorGraph& graph,
-                     std::unique_ptr<internal::NonlinearOptimizerState> state);
+    /** Constructor for initial construction of base classes. Takes ownership of state. */
+    NonlinearOptimizer(const NonlinearFactorGraph& graph, std::unique_ptr<internal::NonlinearOptimizerState> state);
 };
 
 /** Check whether the relative error decrease is less than relativeErrorTreshold,
  * the absolute error decrease is less than absoluteErrorTreshold, <em>or</em>
  * the error itself is less than errorThreshold.
  */
-GTSAM_EXPORT bool checkConvergence(double relativeErrorTreshold,
-    double absoluteErrorTreshold, double errorThreshold,
-    double currentError, double newError, NonlinearOptimizerParams::Verbosity verbosity = NonlinearOptimizerParams::SILENT);
+GTSAM_EXPORT bool checkConvergence(double relativeErrorTreshold, double absoluteErrorTreshold, double errorThreshold,
+                                   double currentError, double newError,
+                                   NonlinearOptimizerParams::Verbosity verbosity = NonlinearOptimizerParams::SILENT);
 
-GTSAM_EXPORT bool checkConvergence(const NonlinearOptimizerParams& params, double currentError,
-                                   double newError);
+GTSAM_EXPORT bool checkConvergence(const NonlinearOptimizerParams& params, double currentError, double newError);
 
-} // gtsam
+}  // namespace gtsam

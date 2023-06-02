@@ -20,111 +20,115 @@
 
 #pragma once
 
-#include <gtsam/nonlinear/NonlinearOptimizer.h>
-#include <gtsam/nonlinear/LevenbergMarquardtParams.h>
 #include <gtsam/linear/VectorValues.h>
+#include <gtsam/nonlinear/LevenbergMarquardtParams.h>
+#include <gtsam/nonlinear/NonlinearOptimizer.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 class NonlinearOptimizerMoreOptimizationTest;
 
-namespace gtsam {
+namespace gtsam
+{
 
 /**
  * This class performs Levenberg-Marquardt nonlinear optimization
  */
-class GTSAM_EXPORT LevenbergMarquardtOptimizer: public NonlinearOptimizer {
-
+class GTSAM_EXPORT LevenbergMarquardtOptimizer : public NonlinearOptimizer
+{
 protected:
-  const LevenbergMarquardtParams params_; ///< LM parameters
-  boost::posix_time::ptime startTime_;
+    const LevenbergMarquardtParams params_;  ///< LM parameters
+    boost::posix_time::ptime       startTime_;
 
-  void initTime();
+    void initTime();
 
 public:
-  typedef boost::shared_ptr<LevenbergMarquardtOptimizer> shared_ptr;
+    typedef boost::shared_ptr<LevenbergMarquardtOptimizer> shared_ptr;
 
-  /// @name Constructors/Destructor
-  /// @{
+    /// @name Constructors/Destructor
+    /// @{
 
-  /** Standard constructor, requires a nonlinear factor graph, initial
-   * variable assignments, and optimization parameters.  For convenience this
-   * version takes plain objects instead of shared pointers, but internally
-   * copies the objects.
-   * @param graph The nonlinear factor graph to optimize
-   * @param initialValues The initial variable assignments
-   * @param params The optimization parameters
-   */
-  LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const Values& initialValues,
-                              const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
+    /** Standard constructor, requires a nonlinear factor graph, initial
+     * variable assignments, and optimization parameters.  For convenience this
+     * version takes plain objects instead of shared pointers, but internally
+     * copies the objects.
+     * @param graph The nonlinear factor graph to optimize
+     * @param initialValues The initial variable assignments
+     * @param params The optimization parameters
+     */
+    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const Values& initialValues,
+                                const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
 
-  /** Standard constructor, requires a nonlinear factor graph, initial
-   * variable assignments, and optimization parameters.  For convenience this
-   * version takes plain objects instead of shared pointers, but internally
-   * copies the objects.
-   * @param graph The nonlinear factor graph to optimize
-   * @param initialValues The initial variable assignments
-   */
-  LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const Values& initialValues,
-                              const Ordering& ordering,
-                              const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
+    /** Standard constructor, requires a nonlinear factor graph, initial
+     * variable assignments, and optimization parameters.  For convenience this
+     * version takes plain objects instead of shared pointers, but internally
+     * copies the objects.
+     * @param graph The nonlinear factor graph to optimize
+     * @param initialValues The initial variable assignments
+     */
+    LevenbergMarquardtOptimizer(const NonlinearFactorGraph& graph, const Values& initialValues,
+                                const Ordering&                 ordering,
+                                const LevenbergMarquardtParams& params = LevenbergMarquardtParams());
 
-  /** Virtual destructor */
-  ~LevenbergMarquardtOptimizer() override {
-  }
+    /** Virtual destructor */
+    ~LevenbergMarquardtOptimizer() override
+    {
+    }
 
-  /// @}
+    /// @}
 
-  /// @name Standard interface
-  /// @{
+    /// @name Standard interface
+    /// @{
 
-  /// Access the current damping value
-  double lambda() const;
+    /// Access the current damping value
+    double lambda() const;
 
-  /// Access the current number of inner iterations
-  int getInnerIterations() const;
+    /// Access the current number of inner iterations
+    int getInnerIterations() const;
 
-  /// print
-  void print(const std::string& str = "") const {
-    std::cout << str << "LevenbergMarquardtOptimizer" << std::endl;
-    this->params_.print("  parameters:\n");
-  }
+    /// print
+    void print(const std::string& str = "") const
+    {
+        std::cout << str << "LevenbergMarquardtOptimizer" << std::endl;
+        this->params_.print("  parameters:\n");
+    }
 
-  /// @}
+    /// @}
 
-  /// @name Advanced interface
-  /// @{
+    /// @name Advanced interface
+    /// @{
 
-  /** 
-   * Perform a single iteration, returning GaussianFactorGraph corresponding to 
-   * the linearized factor graph.
-   */
-  GaussianFactorGraph::shared_ptr iterate() override;
+    /**
+     * Perform a single iteration, returning GaussianFactorGraph corresponding to
+     * the linearized factor graph.
+     */
+    GaussianFactorGraph::shared_ptr iterate() override;
 
-  /** Read-only access the parameters */
-  const LevenbergMarquardtParams& params() const {
-    return params_;
-  }
+    /** Read-only access the parameters */
+    const LevenbergMarquardtParams& params() const
+    {
+        return params_;
+    }
 
-  void writeLogFile(double currentError);
+    void writeLogFile(double currentError);
 
-  /** linearize, can be overwritten */
-  virtual GaussianFactorGraph::shared_ptr linearize() const;
+    /** linearize, can be overwritten */
+    virtual GaussianFactorGraph::shared_ptr linearize() const;
 
-  /** Build a damped system for a specific lambda -- for testing only */
-  GaussianFactorGraph buildDampedSystem(const GaussianFactorGraph& linear,
-                                        const VectorValues& sqrtHessianDiagonal) const;
+    /** Build a damped system for a specific lambda -- for testing only */
+    GaussianFactorGraph buildDampedSystem(const GaussianFactorGraph& linear,
+                                          const VectorValues&        sqrtHessianDiagonal) const;
 
-  /** Inner loop, changes state, returns true if successful or giving up */
-  bool tryLambda(const GaussianFactorGraph& linear, const VectorValues& sqrtHessianDiagonal);
+    /** Inner loop, changes state, returns true if successful or giving up */
+    bool tryLambda(const GaussianFactorGraph& linear, const VectorValues& sqrtHessianDiagonal);
 
-  /// @}
+    /// @}
 
 protected:
-
-  /** Access the parameters (base class version) */
-  const NonlinearOptimizerParams& _params() const override {
-    return params_;
-  }
+    /** Access the parameters (base class version) */
+    const NonlinearOptimizerParams& _params() const override
+    {
+        return params_;
+    }
 };
 
-}
+}  // namespace gtsam

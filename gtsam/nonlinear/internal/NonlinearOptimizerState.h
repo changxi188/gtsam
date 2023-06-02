@@ -21,8 +21,10 @@
 
 #include <gtsam/nonlinear/Values.h>
 
-namespace gtsam {
-namespace internal {
+namespace gtsam
+{
+namespace internal
+{
 
 /**
  * Base class for a nonlinear optimization state, including the current estimate
@@ -31,25 +33,32 @@ namespace internal {
  * additional state specific to the algorithm (for example, Dogleg state
  * contains the current trust region radius).
  */
-struct NonlinearOptimizerState {
- public:
-  /** The current estimate of the variable values. */
-  const Values values;
+struct NonlinearOptimizerState
+{
+public:
+    /** The current estimate of the variable values. */
+    const Values values;
 
-  /** The factor graph error on the current values. */
-  const double error;
+    /** The factor graph error on the current values. */
+    const double error;
 
-  /** The number of optimization iterations performed. */
-  const size_t iterations;
+    /** The number of optimization iterations performed. */
+    const size_t iterations;
 
-  virtual ~NonlinearOptimizerState() {}
+    virtual ~NonlinearOptimizerState()
+    {
+    }
 
-  NonlinearOptimizerState(const Values& values, double error, size_t iterations = 0)
-      : values(values), error(error), iterations(iterations) {}
+    NonlinearOptimizerState(const Values& values, double error, size_t iterations = 0)
+      : values(values), error(error), iterations(iterations)
+    {
+    }
 
-  // Constructor version that takes ownership of values
-  NonlinearOptimizerState(Values&& values, double error, size_t iterations = 0)
-      : values(std::move(values)), error(error), iterations(iterations) {}
+    // Constructor version that takes ownership of values
+    NonlinearOptimizerState(Values&& values, double error, size_t iterations = 0)
+      : values(std::move(values)), error(error), iterations(iterations)
+    {
+    }
 };
 
 }  // namespace internal

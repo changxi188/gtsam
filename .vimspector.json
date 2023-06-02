@@ -10,7 +10,7 @@
             ],
             "configuration": {
                 "request": "launch",
-                "program": "${workspaceRoot}/build/examples/VisualISAM2Example",
+                "program": "${workspaceRoot}/build/examples/self_test_between_factor",
                 "args": [],
                 "cwd": "${workspaceRoot}",
                 "environment": [],
