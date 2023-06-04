@@ -10,7 +10,7 @@
             ],
             "configuration": {
                 "request": "launch",
-                "program": "${workspaceRoot}/build/examples/self_test_between_factor",
+                "program": "${workspaceRoot}/build/examples/self_test_isam2_bayes_tree",
                 "args": [],
                 "cwd": "${workspaceRoot}",
                 "environment": [],
