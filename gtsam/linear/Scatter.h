@@ -19,25 +19,33 @@
 
 #pragma once
 
-#include <gtsam/inference/Key.h>
 #include <gtsam/base/FastMap.h>
 #include <gtsam/dllexport.h>
+#include <gtsam/inference/Key.h>
 
-namespace gtsam {
+namespace gtsam
+{
 
 class GaussianFactorGraph;
 class Ordering;
 
 /// One SlotEntry stores the slot index for a variable, as well its dim.
-struct GTSAM_EXPORT SlotEntry {
-  Key key;
-  size_t dimension;
-  SlotEntry(Key _key, size_t _dimension) : key(_key), dimension(_dimension) {}
-  std::string toString() const;
-  friend bool operator<(const SlotEntry& p, const SlotEntry& q) {
-    return p.key < q.key;
-  }
-  static bool Zero(const SlotEntry& p) { return p.dimension==0;}
+struct GTSAM_EXPORT SlotEntry
+{
+    Key    key;
+    size_t dimension;
+    SlotEntry(Key _key, size_t _dimension) : key(_key), dimension(_dimension)
+    {
+    }
+    std::string toString() const;
+    friend bool operator<(const SlotEntry& p, const SlotEntry& q)
+    {
+        return p.key < q.key;
+    }
+    static bool Zero(const SlotEntry& p)
+    {
+        return p.dimension == 0;
+    }
 };
 
 /**
@@ -46,23 +54,26 @@ struct GTSAM_EXPORT SlotEntry {
  * from global variable indices to slot indices in the union of involved
  * variables. We also include the dimensionality of the variable.
  */
-class Scatter : public FastVector<SlotEntry> {
- public:
-  /// Default Constructor
-   GTSAM_EXPORT Scatter() {}
+class Scatter : public FastVector<SlotEntry>
+{
+public:
+    /// Default Constructor
+    GTSAM_EXPORT Scatter()
+    {
+    }
 
-  /// Construct from gaussian factor graph, without ordering
-   GTSAM_EXPORT explicit Scatter(const GaussianFactorGraph& gfg);
+    /// Construct from gaussian factor graph, without ordering
+    GTSAM_EXPORT explicit Scatter(const GaussianFactorGraph& gfg);
 
-  /// Construct from gaussian factor graph, with (partial or complete) ordering
-   GTSAM_EXPORT explicit Scatter(const GaussianFactorGraph& gfg, const Ordering& ordering);
+    /// Construct from gaussian factor graph, with (partial or complete) ordering
+    GTSAM_EXPORT explicit Scatter(const GaussianFactorGraph& gfg, const Ordering& ordering);
 
-  /// Add a key/dim pair
-   GTSAM_EXPORT void add(Key key, size_t dim);
+    /// Add a key/dim pair
+    GTSAM_EXPORT void add(Key key, size_t dim);
 
- private:
-  /// Find the SlotEntry with the right key (linear time worst case)
-  iterator find(Key key);
+private:
+    /// Find the SlotEntry with the right key (linear time worst case)
+    iterator find(Key key);
 };
 
-}  // \ namespace gtsam
+}  // namespace gtsam
