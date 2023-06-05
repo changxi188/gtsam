@@ -23,18 +23,19 @@ int main()
     values.insert(X2, p2);
 
     gtsam::NonlinearFactorGraph nonlinear_factor_graph;
-    // nonlinear_factor_graph.add(prior_factor);
+    nonlinear_factor_graph.add(prior_factor);
     nonlinear_factor_graph.add(between_factor);
 
     boost::shared_ptr<gtsam::GaussianFactorGraph> gaussian_factor_graph = nonlinear_factor_graph.linearize(values);
     gtsam::VariableIndex                          affectedFactorsVarIndex(*gaussian_factor_graph);
-    gtsam::FastMap<gtsam::Key, int>               constraintGroups;
+    affectedFactorsVarIndex.print("Affected var Factors index : ");
+    gtsam::FastMap<gtsam::Key, int> constraintGroups;
     const gtsam::Ordering ordering = gtsam::Ordering::ColamdConstrained(affectedFactorsVarIndex, constraintGroups);
-    gtsam::GaussianEliminationTree etree(*gaussian_factor_graph, affectedFactorsVarIndex, ordering);
+    ordering.print("colamd ordering : ");
     gtsam::ISAM2Params             isam2_params;
-    isam2_params.factorization = gtsam::ISAM2Params::QR;
-    const auto eliminate_func  = isam2_params.getEliminationFunction();
-
+    const auto                     eliminate_func = isam2_params.getEliminationFunction();
+    gtsam::GaussianEliminationTree etree(*gaussian_factor_graph, affectedFactorsVarIndex, ordering);
+    etree.print("Gaussian Eliminate treee : ");
     gtsam::ISAM2JunctionTree                       junction_tree(etree);
     const boost::shared_ptr<gtsam::ISAM2BayesTree> isam2_bayes_tree = junction_tree.eliminate(eliminate_func).first;
     return 0;

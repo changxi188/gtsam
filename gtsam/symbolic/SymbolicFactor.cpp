@@ -17,40 +17,41 @@
 
 #include <gtsam/base/FastVector.h>
 #include <gtsam/inference/Ordering.h>
-#include <gtsam/symbolic/SymbolicFactor.h>
 #include <gtsam/symbolic/SymbolicConditional.h>
-#include <gtsam/symbolic/SymbolicFactorGraph.h>
 #include <gtsam/symbolic/SymbolicFactor-inst.h>
+#include <gtsam/symbolic/SymbolicFactor.h>
+#include <gtsam/symbolic/SymbolicFactorGraph.h>
 
 using namespace std;
 
-namespace gtsam {
-
-  /* ************************************************************************* */
-  double SymbolicFactor::error(const HybridValues& c) const {
+namespace gtsam
+{
+/* ************************************************************************* */
+double SymbolicFactor::error(const HybridValues& c) const
+{
     throw std::runtime_error("SymbolicFactor::error is not implemented");
-  }
+}
 
-  /* ************************************************************************* */
-  std::pair<boost::shared_ptr<SymbolicConditional>, boost::shared_ptr<SymbolicFactor> >
-    EliminateSymbolic(const SymbolicFactorGraph& factors, const Ordering& keys)
-  {
+/* ************************************************************************* */
+std::pair<boost::shared_ptr<SymbolicConditional>, boost::shared_ptr<SymbolicFactor> >
+EliminateSymbolic(const SymbolicFactorGraph& factors, const Ordering& keys)
+{
     return internal::EliminateSymbolic(factors, keys);
-  }
+}
 
-  /* ************************************************************************* */
-  bool SymbolicFactor::equals(const This& other, double tol) const
-  {
+/* ************************************************************************* */
+bool SymbolicFactor::equals(const This& other, double tol) const
+{
     return Base::equals(other, tol);
-  }
+}
 
-  /* ************************************************************************* */
-  std::pair<boost::shared_ptr<SymbolicConditional>, boost::shared_ptr<SymbolicFactor> >
-    SymbolicFactor::eliminate(const Ordering& keys) const
-  {
+/* ************************************************************************* */
+std::pair<boost::shared_ptr<SymbolicConditional>, boost::shared_ptr<SymbolicFactor> >
+SymbolicFactor::eliminate(const Ordering& keys) const
+{
     SymbolicFactorGraph graph;
-    graph += *this; // TODO: Is there a way to avoid copying this factor?
+    graph += *this;  // TODO: Is there a way to avoid copying this factor?
     return EliminateSymbolic(graph, keys);
-  }
+}
 
-} // gtsam
+}  // namespace gtsam
