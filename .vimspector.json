@@ -10,7 +10,7 @@
             ],
             "configuration": {
                 "request": "launch",
-                "program": "${workspaceRoot}/build/examples/self_test_isam2_bayes_tree",
+                "program": "${workspaceRoot}/build/gtsam_unstable/examples/FixedLagSmootherExample",
                 "args": [],
                 "cwd": "${workspaceRoot}",
                 "environment": [],

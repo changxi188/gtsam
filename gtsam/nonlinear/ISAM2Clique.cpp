@@ -334,7 +334,7 @@ size_t ISAM2Clique::calculate_nnz() const
 /* ************************************************************************* */
 void ISAM2Clique::findAll(const KeySet& markedMask, KeySet* keys) const
 {
-    static const bool debug = true;
+    static const bool debug = false;
     // does the separator contain any of the variables?
     bool found = false;
     for (Key key : conditional_->parents())

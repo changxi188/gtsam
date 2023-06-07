@@ -17,6 +17,7 @@
  * @date    Oct 14, 2012
  */
 
+#include <gtsam/base/debug.h>
 #include <gtsam/linear/GaussianFactor.h>
 #include <gtsam/linear/GaussianFactorGraph.h>
 #include <gtsam/linear/GaussianJunctionTree.h>
@@ -27,7 +28,6 @@ using namespace std;
 
 namespace gtsam
 {
-
 /* ************************************************************************* */
 void BatchFixedLagSmoother::print(const string& s, const KeyFormatter& keyFormatter) const
 {
@@ -54,6 +54,8 @@ FixedLagSmoother::Result BatchFixedLagSmoother::update(const NonlinearFactorGrap
                                                        const KeyTimestampMap& timestamps,
                                                        const FactorIndices&   factorsToRemove)
 {
+    const bool debug = ISDEBUG("BatchFixedLagSmoother update");
+
     // Update all of the internal variables with the new information
     gttic(augment_system);
     // Add the new variables to theta
@@ -83,8 +85,21 @@ FixedLagSmoother::Result BatchFixedLagSmoother::update(const NonlinearFactorGrap
     // Get current timestamp
     double current_timestamp = getCurrentTimestamp();
 
+    if (debug)
+        std::cout << "Current Timestamp: " << current_timestamp << std::endl;
+
     // Find the set of variables to be marginalized out
     KeyVector marginalizableKeys = findKeysBefore(current_timestamp - smootherLag_);
+
+    if (debug)
+    {
+        std::cout << "Marginalizable Keys: ";
+        for (Key key : marginalizableKeys)
+        {
+            std::cout << DefaultKeyFormatter(key) << " ";
+        }
+        std::cout << std::endl;
+    }
 
     // Reorder
     gttic(reorder);
@@ -100,12 +115,25 @@ FixedLagSmoother::Result BatchFixedLagSmoother::update(const NonlinearFactorGrap
     }
     gttoc(optimize);
 
+    if (debug)
+    {
+        factors_.print("after optimize, before marginalize ,factors : ");
+        std::cout << std::endl;
+    }
+
     // Marginalize out old variables.
     gttic(marginalize);
     if (marginalizableKeys.size() > 0)
     {
         marginalize(marginalizableKeys);
     }
+
+    if (debug)
+    {
+        factors_.print("after marginalize, factors : ");
+        std::cout << std::endl;
+    }
+
     gttoc(marginalize);
 
     return result;

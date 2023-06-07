@@ -51,13 +51,17 @@
 
 #include <iomanip>
 
+#include <gtsam/base/debug.h>
+
 using namespace std;
 using namespace gtsam;
 
 int main(int argc, char** argv)
 {
+    // SETDEBUG("IncrementalFixedLagSmoother update", true);
+    SETDEBUG("BatchFixedLagSmoother update", true);
     // Define the smoother lag (in seconds)
-    double lag = 2.0;
+    double lag = 0.5;
 
     // Create a fixed lag smoother
     // The Batch version uses Levenberg-Marquardt to perform the nonlinear optimization
@@ -88,17 +92,19 @@ int main(int argc, char** argv)
     for (double time = deltaT; time <= 3.0; time += deltaT)
     {
         // Define the keys related to this timestamp
-        Key previousKey(1000 * (time - deltaT));
-        Key currentKey(1000 * (time));
+        Key previousKey(100 * (time - deltaT));
+        Key currentKey(100 * (time));
 
         // Assign the current key to the current timestamp
         newTimestamps[currentKey] = time;
+        std::cout << "time : " << time << std::endl;
 
         // Add a guess for this pose to the new values
         // Since the robot moves forward at 2 m/s, then the position is simply: time[s]*2.0[m/s]
         // {This is not a particularly good way to guess, but this is just an example}
         Pose2 currentPose(time * 2.0, 0.0, 0.0);
         newValues.insert(currentKey, currentPose);
+        newValues.print("newValues : ");
 
         // Add odometry factors from two different sources with different error stats
         Pose2                            odometryMeasurement1 = Pose2(0.61, -0.08, 0.02);
@@ -108,6 +114,7 @@ int main(int argc, char** argv)
         Pose2                            odometryMeasurement2 = Pose2(0.47, 0.03, 0.01);
         noiseModel::Diagonal::shared_ptr odometryNoise2       = noiseModel::Diagonal::Sigmas(Vector3(0.05, 0.05, 0.05));
         newFactors.push_back(BetweenFactor<Pose2>(previousKey, currentKey, odometryMeasurement2, odometryNoise2));
+        newFactors.print("newFactors : ");
 
         // Update the smoothers with the new factors. In this example, batch smoother needs one iteration
         // to accurately converge. The ISAM smoother doesn't, but we only start getting estiates when
@@ -116,13 +123,12 @@ int main(int argc, char** argv)
         {
             smootherBatch.update(newFactors, newValues, newTimestamps);
             smootherISAM2.update(newFactors, newValues, newTimestamps);
-            for (size_t i = 1; i < 2; ++i)
+            for (size_t i = 1; i < 1; ++i)
             {  // Optionally perform multiple iSAM2 iterations
                 smootherISAM2.update();
             }
 
             // Print the optimized current pose
-            cout << setprecision(5) << "Timestamp = " << time << endl;
             smootherBatch.calculateEstimate<Pose2>(currentKey).print("Batch Estimate:");
             smootherISAM2.calculateEstimate<Pose2>(currentKey).print("iSAM2 Estimate:");
             cout << endl;
@@ -159,7 +165,8 @@ int main(int argc, char** argv)
 
     // Converts the linear graph into a Jacobian factor and extracts the Jacobian matrix
     Matrix jacobian = linearGraph->jacobian().first;
-    cout << " Jacobian: " << jacobian << endl;
+    cout << " Jacobian: " << jacobian.rows() << " * " << jacobian.cols() << endl;
+    // std::cout << jacobian << std::endl;
 
     return 0;
 }

@@ -42,16 +42,20 @@ int main()
 
     gtsam::GaussianEliminationTree etree(*gaussian_factor_graph, affectedFactorsVarIndex, ordering);
     etree.print("Gaussian Eliminate treee : ");
+    std::cout << std::endl;
 
     gtsam::ISAM2Params isam2_params;
     isam2_params.print("ISAM2 params : ");
     const auto eliminate_func = isam2_params.getEliminationFunction();
+    std::cout << std::endl;
 
     gtsam::ISAM2JunctionTree junction_tree(etree);
     junction_tree.print("junction tree : ");
+    std::cout << std::endl;
 
     const boost::shared_ptr<gtsam::ISAM2BayesTree> isam2_bayes_tree = junction_tree.eliminate(eliminate_func).first;
     isam2_bayes_tree->print("isam2_bayes_tree : ");
+    std::cout << std::endl;
 
     return 0;
 }
