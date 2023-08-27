@@ -283,7 +283,7 @@ EliminateableFactorGraph<FACTORGRAPH>::marginalMultifrontalBayesNet(
         // COLAMD.
         bool             unmarginalizedAreOrdered = (boost::get<const Ordering&>(&variables) != 0);
         const KeyVector* variablesOrOrdering      = unmarginalizedAreOrdered ? boost::get<const Ordering&>(&variables) :
-                                                                          boost::get<const KeyVector&>(&variables);
+                                                                               boost::get<const KeyVector&>(&variables);
 
         Ordering totalOrdering =
             Ordering::ColamdConstrainedLast(*variableIndex, *variablesOrOrdering, unmarginalizedAreOrdered);
@@ -354,7 +354,7 @@ EliminateableFactorGraph<FACTORGRAPH>::marginalMultifrontalBayesTree(
         // COLAMD.
         bool             unmarginalizedAreOrdered = (boost::get<const Ordering&>(&variables) != 0);
         const KeyVector* variablesOrOrdering      = unmarginalizedAreOrdered ? boost::get<const Ordering&>(&variables) :
-                                                                          boost::get<const KeyVector&>(&variables);
+                                                                               boost::get<const KeyVector&>(&variables);
 
         Ordering totalOrdering =
             Ordering::ColamdConstrainedLast(*variableIndex, *variablesOrOrdering, unmarginalizedAreOrdered);

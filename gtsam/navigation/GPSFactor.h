@@ -17,11 +17,12 @@
  **/
 #pragma once
 
-#include <gtsam/nonlinear/NonlinearFactor.h>
-#include <gtsam/navigation/NavState.h>
 #include <gtsam/geometry/Pose3.h>
+#include <gtsam/navigation/NavState.h>
+#include <gtsam/nonlinear/NonlinearFactor.h>
 
-namespace gtsam {
+namespace gtsam
+{
 
 /**
  * Prior on position in a Cartesian frame.
@@ -32,144 +33,142 @@ namespace gtsam {
  * See Farrell08book or e.g. http://www.dirsig.org/docs/new/coordinates.html
  * @ingroup navigation
  */
-class GTSAM_EXPORT GPSFactor: public NoiseModelFactorN<Pose3> {
-
+class GTSAM_EXPORT GPSFactor : public NoiseModelFactorN<Pose3>
+{
 private:
+    typedef NoiseModelFactorN<Pose3> Base;
 
-  typedef NoiseModelFactorN<Pose3> Base;
-
-  Point3 nT_; ///< Position measurement in cartesian coordinates
+    Point3 nT_;  ///< Position measurement in cartesian coordinates
 
 public:
+    /// shorthand for a smart pointer to a factor
+    typedef boost::shared_ptr<GPSFactor> shared_ptr;
 
-  /// shorthand for a smart pointer to a factor
-  typedef boost::shared_ptr<GPSFactor> shared_ptr;
+    /// Typedef to this class
+    typedef GPSFactor This;
 
-  /// Typedef to this class
-  typedef GPSFactor This;
+    /** default constructor - only use for serialization */
+    GPSFactor() : nT_(0, 0, 0)
+    {
+    }
 
-  /** default constructor - only use for serialization */
-  GPSFactor(): nT_(0, 0, 0) {}
+    ~GPSFactor() override
+    {
+    }
 
-  ~GPSFactor() override {}
+    /**
+     * @brief Constructor from a measurement in a Cartesian frame.
+     * Use GeographicLib to convert from geographic (latitude and longitude) coordinates
+     * @param key of the Pose3 variable that will be constrained
+     * @param gpsIn measurement already in correct coordinates
+     * @param model Gaussian noise model
+     */
+    GPSFactor(Key key, const Point3& gpsIn, const SharedNoiseModel& model) : Base(model, key), nT_(gpsIn)
+    {
+    }
 
-  /**
-   * @brief Constructor from a measurement in a Cartesian frame.
-   * Use GeographicLib to convert from geographic (latitude and longitude) coordinates
-   * @param key of the Pose3 variable that will be constrained
-   * @param gpsIn measurement already in correct coordinates
-   * @param model Gaussian noise model
-   */
-  GPSFactor(Key key, const Point3& gpsIn, const SharedNoiseModel& model) :
-      Base(model, key), nT_(gpsIn) {
-  }
+    /// @return a deep copy of this factor
+    gtsam::NonlinearFactor::shared_ptr clone() const override
+    {
+        return boost::static_pointer_cast<gtsam::NonlinearFactor>(gtsam::NonlinearFactor::shared_ptr(new This(*this)));
+    }
 
-  /// @return a deep copy of this factor
-  gtsam::NonlinearFactor::shared_ptr clone() const override {
-    return boost::static_pointer_cast<gtsam::NonlinearFactor>(
-        gtsam::NonlinearFactor::shared_ptr(new This(*this)));
-  }
+    /// print
+    void print(const std::string& s = "", const KeyFormatter& keyFormatter = DefaultKeyFormatter) const override;
 
-  /// print
-  void print(const std::string& s = "", const KeyFormatter& keyFormatter =
-                                            DefaultKeyFormatter) const override;
+    /// equals
+    bool equals(const NonlinearFactor& expected, double tol = 1e-9) const override;
 
-  /// equals
-  bool equals(const NonlinearFactor& expected, double tol = 1e-9) const override;
+    /// vector of errors
+    Vector evaluateError(const Pose3& p, boost::optional<Matrix&> H = boost::none) const override;
 
-  /// vector of errors
-  Vector evaluateError(const Pose3& p,
-      boost::optional<Matrix&> H = boost::none) const override;
+    inline const Point3& measurementIn() const
+    {
+        return nT_;
+    }
 
-  inline const Point3 & measurementIn() const {
-    return nT_;
-  }
-
-  /**
-   *  Convenience function to estimate state at time t, given two GPS
-   *  readings (in local NED Cartesian frame) bracketing t
-   *  Assumes roll is zero, calculates yaw and pitch from NED1->NED2 vector.
-   */
-  static std::pair<Pose3, Vector3> EstimateState(double t1, const Point3& NED1,
-      double t2, const Point3& NED2, double timestamp);
+    /**
+     *  Convenience function to estimate state at time t, given two GPS
+     *  readings (in local NED Cartesian frame) bracketing t
+     *  Assumes roll is zero, calculates yaw and pitch from NED1->NED2 vector.
+     */
+    static std::pair<Pose3, Vector3> EstimateState(double t1, const Point3& NED1, double t2, const Point3& NED2,
+                                                   double timestamp);
 
 private:
-
-  /// Serialization function
-  friend class boost::serialization::access;
-  template<class ARCHIVE>
-  void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-    // NoiseModelFactor1 instead of NoiseModelFactorN for backward compatibility
-    ar
-        & boost::serialization::make_nvp("NoiseModelFactor1",
-            boost::serialization::base_object<Base>(*this));
-    ar & BOOST_SERIALIZATION_NVP(nT_);
-  }
+    /// Serialization function
+    friend class boost::serialization::access;
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        // NoiseModelFactor1 instead of NoiseModelFactorN for backward compatibility
+        ar& boost::serialization::make_nvp("NoiseModelFactor1", boost::serialization::base_object<Base>(*this));
+        ar& BOOST_SERIALIZATION_NVP(nT_);
+    }
 };
 
 /**
  * Version of GPSFactor for NavState
  * @ingroup navigation
  */
-class GTSAM_EXPORT GPSFactor2: public NoiseModelFactorN<NavState> {
-
+class GTSAM_EXPORT GPSFactor2 : public NoiseModelFactorN<NavState>
+{
 private:
+    typedef NoiseModelFactorN<NavState> Base;
 
-  typedef NoiseModelFactorN<NavState> Base;
-
-  Point3 nT_; ///< Position measurement in cartesian coordinates
+    Point3 nT_;  ///< Position measurement in cartesian coordinates
 
 public:
+    /// shorthand for a smart pointer to a factor
+    typedef boost::shared_ptr<GPSFactor2> shared_ptr;
 
-  /// shorthand for a smart pointer to a factor
-  typedef boost::shared_ptr<GPSFactor2> shared_ptr;
+    /// Typedef to this class
+    typedef GPSFactor2 This;
 
-  /// Typedef to this class
-  typedef GPSFactor2 This;
+    /// default constructor - only use for serialization
+    GPSFactor2() : nT_(0, 0, 0)
+    {
+    }
 
-  /// default constructor - only use for serialization
-  GPSFactor2():nT_(0, 0, 0) {}
+    ~GPSFactor2() override
+    {
+    }
 
-  ~GPSFactor2() override {}
+    /// Constructor from a measurement in a Cartesian frame.
+    GPSFactor2(Key key, const Point3& gpsIn, const SharedNoiseModel& model) : Base(model, key), nT_(gpsIn)
+    {
+    }
 
-  /// Constructor from a measurement in a Cartesian frame.
-  GPSFactor2(Key key, const Point3& gpsIn, const SharedNoiseModel& model) :
-      Base(model, key), nT_(gpsIn) {
-  }
+    /// @return a deep copy of this factor
+    gtsam::NonlinearFactor::shared_ptr clone() const override
+    {
+        return boost::static_pointer_cast<gtsam::NonlinearFactor>(gtsam::NonlinearFactor::shared_ptr(new This(*this)));
+    }
 
-  /// @return a deep copy of this factor
-  gtsam::NonlinearFactor::shared_ptr clone() const override {
-    return boost::static_pointer_cast<gtsam::NonlinearFactor>(
-        gtsam::NonlinearFactor::shared_ptr(new This(*this)));
-  }
+    /// print
+    void print(const std::string& s = "", const KeyFormatter& keyFormatter = DefaultKeyFormatter) const override;
 
-  /// print
-  void print(const std::string& s = "", const KeyFormatter& keyFormatter =
-                                            DefaultKeyFormatter) const override;
+    /// equals
+    bool equals(const NonlinearFactor& expected, double tol = 1e-9) const override;
 
-  /// equals
-  bool equals(const NonlinearFactor& expected, double tol = 1e-9) const override;
+    /// vector of errors
+    Vector evaluateError(const NavState& p, boost::optional<Matrix&> H = boost::none) const override;
 
-  /// vector of errors
-  Vector evaluateError(const NavState& p,
-      boost::optional<Matrix&> H = boost::none) const override;
-
-  inline const Point3 & measurementIn() const {
-    return nT_;
-  }
+    inline const Point3& measurementIn() const
+    {
+        return nT_;
+    }
 
 private:
-
-  /// Serialization function
-  friend class boost::serialization::access;
-  template<class ARCHIVE>
-  void serialize(ARCHIVE & ar, const unsigned int /*version*/) {
-    // NoiseModelFactor1 instead of NoiseModelFactorN for backward compatibility
-    ar
-        & boost::serialization::make_nvp("NoiseModelFactor1",
-            boost::serialization::base_object<Base>(*this));
-    ar & BOOST_SERIALIZATION_NVP(nT_);
-  }
+    /// Serialization function
+    friend class boost::serialization::access;
+    template <class ARCHIVE>
+    void serialize(ARCHIVE& ar, const unsigned int /*version*/)
+    {
+        // NoiseModelFactor1 instead of NoiseModelFactorN for backward compatibility
+        ar& boost::serialization::make_nvp("NoiseModelFactor1", boost::serialization::base_object<Base>(*this));
+        ar& BOOST_SERIALIZATION_NVP(nT_);
+    }
 };
 
-} /// namespace gtsam
+}  // namespace gtsam

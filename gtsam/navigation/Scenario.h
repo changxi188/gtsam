@@ -19,35 +19,47 @@
 #include <gtsam/linear/NoiseModel.h>
 #include <gtsam/navigation/NavState.h>
 
-namespace gtsam {
+namespace gtsam
+{
 
 /// Simple trajectory simulator.
-class Scenario {
- public:
-  /// virtual destructor
-  virtual ~Scenario() {}
+class Scenario
+{
+public:
+    /// virtual destructor
+    virtual ~Scenario()
+    {
+    }
 
-  // Quantities a Scenario needs to specify:
+    // Quantities a Scenario needs to specify:
 
-  virtual Pose3 pose(double t) const = 0;  ///< pose at time t
-  virtual Vector3 omega_b(double t) const = 0;  ///< angular velocity in body frame
-  virtual Vector3 velocity_n(double t) const = 0;  ///< velocity at time t, in nav frame
-  virtual Vector3 acceleration_n(double t) const = 0;  ///< acceleration in nav frame
+    virtual Pose3   pose(double t) const           = 0;  ///< pose at time t
+    virtual Vector3 omega_b(double t) const        = 0;  ///< angular velocity in body frame
+    virtual Vector3 velocity_n(double t) const     = 0;  ///< velocity at time t, in nav frame
+    virtual Vector3 acceleration_n(double t) const = 0;  ///< acceleration in nav frame
 
-  // Derived quantities:
+    // Derived quantities:
 
-  Rot3 rotation(double t) const { return pose(t).rotation(); }
-  NavState navState(double t) const { return NavState(pose(t), velocity_n(t)); }
+    Rot3 rotation(double t) const
+    {
+        return pose(t).rotation();
+    }
+    NavState navState(double t) const
+    {
+        return NavState(pose(t), velocity_n(t));
+    }
 
-  Vector3 velocity_b(double t) const {
-    const Rot3 nRb = rotation(t);
-    return nRb.transpose() * velocity_n(t);
-  }
+    Vector3 velocity_b(double t) const
+    {
+        const Rot3 nRb = rotation(t);
+        return nRb.transpose() * velocity_n(t);
+    }
 
-  Vector3 acceleration_b(double t) const {
-    const Rot3 nRb = rotation(t);
-    return nRb.transpose() * acceleration_n(t);
-  }
+    Vector3 acceleration_b(double t) const
+    {
+        const Rot3 nRb = rotation(t);
+        return nRb.transpose() * acceleration_n(t);
+    }
 };
 
 /**
@@ -57,48 +69,70 @@ class Scenario {
  * compensated by thrust. The accelerometer will add the gravity component back
  * in, as modeled by the specificForce method in ScenarioRunner.
  */
-class ConstantTwistScenario : public Scenario {
- public:
-  /// Construct scenario with constant twist [w,v]
-  ConstantTwistScenario(const Vector3& w, const Vector3& v,
-                        const Pose3& nTb0 = Pose3())
-      : twist_((Vector6() << w, v).finished()), a_b_(w.cross(v)), nTb0_(nTb0) {}
+class ConstantTwistScenario : public Scenario
+{
+public:
+    /// Construct scenario with constant twist [w,v]
+    ConstantTwistScenario(const Vector3& w, const Vector3& v, const Pose3& nTb0 = Pose3())
+      : twist_((Vector6() << w, v).finished()), a_b_(w.cross(v)), nTb0_(nTb0)
+    {
+    }
 
-  Pose3 pose(double t) const override {
-    return nTb0_ * Pose3::Expmap(twist_ * t);
-  }
-  Vector3 omega_b(double t) const override { return twist_.head<3>(); }
-  Vector3 velocity_n(double t) const override {
-    return rotation(t).matrix() * twist_.tail<3>();
-  }
-  Vector3 acceleration_n(double t) const override { return rotation(t) * a_b_; }
+    Pose3 pose(double t) const override
+    {
+        return nTb0_ * Pose3::Expmap(twist_ * t);
+    }
+    Vector3 omega_b(double t) const override
+    {
+        return twist_.head<3>();
+    }
+    Vector3 velocity_n(double t) const override
+    {
+        return rotation(t).matrix() * twist_.tail<3>();
+    }
+    Vector3 acceleration_n(double t) const override
+    {
+        return rotation(t) * a_b_;
+    }
 
- private:
-  const Vector6 twist_;
-  const Vector3 a_b_;  // constant centripetal acceleration in body = w_b * v_b
-  const Pose3 nTb0_;
+private:
+    const Vector6 twist_;
+    const Vector3 a_b_;  // constant centripetal acceleration in body = w_b * v_b
+    const Pose3   nTb0_;
 };
 
 /// Accelerating from an arbitrary initial state, with optional rotation
-class AcceleratingScenario : public Scenario {
- public:
-  /// Construct scenario with constant acceleration in navigation frame and
-  /// optional angular velocity in body: rotating while translating...
-  AcceleratingScenario(const Rot3& nRb, const Point3& p0, const Vector3& v0,
-                       const Vector3& a_n,
-                       const Vector3& omega_b = Vector3::Zero())
-      : nRb_(nRb), p0_(p0), v0_(v0), a_n_(a_n), omega_b_(omega_b) {}
+class AcceleratingScenario : public Scenario
+{
+public:
+    /// Construct scenario with constant acceleration in navigation frame and
+    /// optional angular velocity in body: rotating while translating...
+    AcceleratingScenario(const Rot3& nRb, const Point3& p0, const Vector3& v0, const Vector3& a_n,
+                         const Vector3& omega_b = Vector3::Zero())
+      : nRb_(nRb), p0_(p0), v0_(v0), a_n_(a_n), omega_b_(omega_b)
+    {
+    }
 
-  Pose3 pose(double t) const override {
-    return Pose3(nRb_.expmap(omega_b_ * t), p0_ + v0_ * t + a_n_ * t * t / 2.0);
-  }
-  Vector3 omega_b(double t) const override { return omega_b_; }
-  Vector3 velocity_n(double t) const override { return v0_ + a_n_ * t; }
-  Vector3 acceleration_n(double t) const override { return a_n_; }
+    Pose3 pose(double t) const override
+    {
+        return Pose3(nRb_.expmap(omega_b_ * t), p0_ + v0_ * t + a_n_ * t * t / 2.0);
+    }
+    Vector3 omega_b(double t) const override
+    {
+        return omega_b_;
+    }
+    Vector3 velocity_n(double t) const override
+    {
+        return v0_ + a_n_ * t;
+    }
+    Vector3 acceleration_n(double t) const override
+    {
+        return a_n_;
+    }
 
- private:
-  const Rot3 nRb_;
-  const Vector3 p0_, v0_, a_n_, omega_b_;
+private:
+    const Rot3    nRb_;
+    const Vector3 p0_, v0_, a_n_, omega_b_;
 };
 
 }  // namespace gtsam

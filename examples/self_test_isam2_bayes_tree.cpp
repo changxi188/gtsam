@@ -56,6 +56,8 @@ int main()
     const boost::shared_ptr<gtsam::ISAM2BayesTree> isam2_bayes_tree = junction_tree.eliminate(eliminate_func).first;
     isam2_bayes_tree->print("isam2_bayes_tree : ");
     std::cout << std::endl;
+    nonlinear_factor_graph.saveGraph("./1.viz");
+    std::cout << nonlinear_factor_graph.dot() << std::endl;
 
     return 0;
 }

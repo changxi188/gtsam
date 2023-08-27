@@ -20,15 +20,18 @@
 #include <gtsam/geometry/Point3.h>
 #include <iostream>
 
-namespace gtsam {
+namespace gtsam
+{
 
 /// All bias models live in the imuBias namespace
-namespace imuBias {
+namespace imuBias
+{
 
 /*
  * NOTES:
  * - Earth-rate correction:
- *     + Currently the user should supply R_ECEF_to_G, which is the rotation from ECEF to Local-Level system (NED or ENU as defined by the user).
+ *     + Currently the user should supply R_ECEF_to_G, which is the rotation from ECEF to Local-Level system (NED or ENU
+ * as defined by the user).
  *     + R_ECEF_to_G can be calculated by approximated values of latitude and longitude of the system.
  *     + A relatively small distance is traveled w.r.t. to initial pose is assumed, since R_ECEF_to_G is constant.
  *        Otherwise, R_ECEF_to_G should be updated each time using the current lat-lon.
@@ -65,18 +68,19 @@ namespace imuBias {
 ////      return measurement - bias_gyro_temp - R_G_to_I * w_earth_rate_G;
 //    }
 /// ostream operator
-std::ostream& operator<<(std::ostream& os, const ConstantBias& bias) {
-  os << "acc = " << bias.accelerometer().transpose();
-  os << " gyro = " << bias.gyroscope().transpose();
-  return os;
+std::ostream& operator<<(std::ostream& os, const ConstantBias& bias)
+{
+    os << "acc = " << bias.accelerometer().transpose();
+    os << " gyro = " << bias.gyroscope().transpose();
+    return os;
 }
 
 /// print with optional string
-void ConstantBias::print(const std::string& s) const {
-  std::cout << s << *this << std::endl;
+void ConstantBias::print(const std::string& s) const
+{
+    std::cout << s << *this << std::endl;
 }
 
-} // namespace imuBias
+}  // namespace imuBias
 
-} // namespace gtsam
-
+}  // namespace gtsam

@@ -58,8 +58,11 @@ using namespace gtsam;
 
 int main(int argc, char** argv)
 {
-    // SETDEBUG("IncrementalFixedLagSmoother update", true);
-    SETDEBUG("BatchFixedLagSmoother update", true);
+    SETDEBUG("IncrementalFixedLagSmoother update", true);
+    SETDEBUG("ISAM2 update", true);
+    SETDEBUG("ISAM2 AddVariables", true);
+
+    // SETDEBUG("BatchFixedLagSmoother update", true);
     // Define the smoother lag (in seconds)
     double lag = 0.5;
 
@@ -70,10 +73,10 @@ int main(int argc, char** argv)
     ISAM2Params parameters;
     parameters.relinearizeThreshold = 0.0;  // Set the relin threshold to zero such that the batch estimate is recovered
     parameters.relinearizeSkip      = 1;    // Relinearize every time
+    parameters.findUnusedFactorSlots = true;
     IncrementalFixedLagSmoother smootherISAM2(lag, parameters);
 
-    // Create containers to store the factors and linearization points that
-    // will be sent to the smoothers
+    // Create containers to store the factors and linearization points that will be sent to the smoothers
     NonlinearFactorGraph              newFactors;
     Values                            newValues;
     FixedLagSmoother::KeyTimestampMap newTimestamps;
@@ -97,14 +100,14 @@ int main(int argc, char** argv)
 
         // Assign the current key to the current timestamp
         newTimestamps[currentKey] = time;
-        std::cout << "time : " << time << std::endl;
+        // std::cout << "time : " << time << std::endl;
 
         // Add a guess for this pose to the new values
         // Since the robot moves forward at 2 m/s, then the position is simply: time[s]*2.0[m/s]
         // {This is not a particularly good way to guess, but this is just an example}
         Pose2 currentPose(time * 2.0, 0.0, 0.0);
         newValues.insert(currentKey, currentPose);
-        newValues.print("newValues : ");
+        // newValues.print("newValues : ");
 
         // Add odometry factors from two different sources with different error stats
         Pose2                            odometryMeasurement1 = Pose2(0.61, -0.08, 0.02);
@@ -114,14 +117,14 @@ int main(int argc, char** argv)
         Pose2                            odometryMeasurement2 = Pose2(0.47, 0.03, 0.01);
         noiseModel::Diagonal::shared_ptr odometryNoise2       = noiseModel::Diagonal::Sigmas(Vector3(0.05, 0.05, 0.05));
         newFactors.push_back(BetweenFactor<Pose2>(previousKey, currentKey, odometryMeasurement2, odometryNoise2));
-        newFactors.print("newFactors : ");
+        // newFactors.print("newFactors : ");
 
         // Update the smoothers with the new factors. In this example, batch smoother needs one iteration
         // to accurately converge. The ISAM smoother doesn't, but we only start getting estiates when
         // both are ready for simplicity.
         if (time >= 0.50)
         {
-            smootherBatch.update(newFactors, newValues, newTimestamps);
+            // smootherBatch.update(newFactors, newValues, newTimestamps);
             smootherISAM2.update(newFactors, newValues, newTimestamps);
             for (size_t i = 1; i < 1; ++i)
             {  // Optionally perform multiple iSAM2 iterations
@@ -129,9 +132,12 @@ int main(int argc, char** argv)
             }
 
             // Print the optimized current pose
-            smootherBatch.calculateEstimate<Pose2>(currentKey).print("Batch Estimate:");
+            // smootherBatch.calculateEstimate<Pose2>(currentKey).print("Batch Estimate:");
             smootherISAM2.calculateEstimate<Pose2>(currentKey).print("iSAM2 Estimate:");
             cout << endl;
+
+            auto& factorGraph = smootherISAM2.getFactors();
+            factorGraph.print("factorGraph");
 
             // Clear contains for the next iteration
             newTimestamps.clear();
@@ -143,10 +149,13 @@ int main(int argc, char** argv)
     // And to demonstrate the fixed-lag aspect, print the keys contained in each smoother after 3.0 seconds
     cout << "After 3.0 seconds, " << endl;
     cout << "  Batch Smoother Keys: " << endl;
+    /*
     for (const FixedLagSmoother::KeyTimestampMap::value_type& key_timestamp : smootherBatch.timestamps())
     {
         cout << setprecision(5) << "    Key: " << key_timestamp.first << "  Time: " << key_timestamp.second << endl;
     }
+    */
+
     cout << "  iSAM2 Smoother Keys: " << endl;
     for (const FixedLagSmoother::KeyTimestampMap::value_type& key_timestamp : smootherISAM2.timestamps())
     {
@@ -159,6 +168,7 @@ int main(int argc, char** argv)
 
     // Get the factor graph
     auto& factorGraph = smootherISAM2.getFactors();
+    factorGraph.print("factorGraph");
 
     // Linearize to a Gaussian factor graph
     boost::shared_ptr<GaussianFactorGraph> linearGraph = factorGraph.linearize(result);
@@ -166,7 +176,8 @@ int main(int argc, char** argv)
     // Converts the linear graph into a Jacobian factor and extracts the Jacobian matrix
     Matrix jacobian = linearGraph->jacobian().first;
     cout << " Jacobian: " << jacobian.rows() << " * " << jacobian.cols() << endl;
-    // std::cout << jacobian << std::endl;
+    std::cout << jacobian << std::endl;
+    factorGraph.saveGraph("./1.viz");
 
     return 0;
 }
