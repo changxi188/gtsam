@@ -1,0 +1,22 @@
+graph {
+  size="5,5";
+
+  var250[label="250"];
+  var275[label="275"];
+  var300[label="300"];
+
+  factor2[label="", shape=point];
+  var250--factor2;
+  var275--factor2;
+  factor3[label="", shape=point];
+  var250--factor3;
+  var275--factor3;
+  factor4[label="", shape=point];
+  var275--factor4;
+  var300--factor4;
+  factor5[label="", shape=point];
+  var275--factor5;
+  var300--factor5;
+  factor16[label="", shape=point];
+  var250--factor16;
+}

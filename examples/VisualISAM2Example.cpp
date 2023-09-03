@@ -49,6 +49,7 @@
 // location using a Prior factor.
 #include <gtsam/slam/ProjectionFactor.h>
 
+#include <fstream>
 #include <vector>
 
 using namespace std;
@@ -68,6 +69,17 @@ int main(int argc, char* argv[])
 
     // Create the set of ground-truth poses
     vector<Pose3> poses = createPoses();
+
+    std::ofstream of("./build/simatic.txt");
+    for (const auto& point : points)
+    {
+        of << point.x() << " " << point.y() << " " << point.z() << std::endl;
+    }
+
+    for (const auto& pose : poses)
+    {
+        of << pose.x() << " " << pose.y() << " " << pose.z() << std::endl;
+    }
 
     // Create an iSAM2 object. Unlike iSAM1, which performs periodic batch steps
     // to maintain proper linearization and efficient variable ordering, iSAM2

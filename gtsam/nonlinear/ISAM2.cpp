@@ -33,7 +33,6 @@ using namespace std;
 
 namespace gtsam
 {
-
 // Instantiate base class
 template class BayesTree<ISAM2Clique>;
 

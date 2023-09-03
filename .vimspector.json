@@ -10,7 +10,7 @@
             ],
             "configuration": {
                 "request": "launch",
-                "program": "${workspaceRoot}/build/gtsam_unstable/examples/FixedLagSmootherExample",
+                "program": "${workspaceRoot}/build/examples/VisualISAM2Example",
                 "args": [],
                 "cwd": "${workspaceRoot}",
                 "environment": [],

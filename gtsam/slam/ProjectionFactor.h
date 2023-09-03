@@ -29,7 +29,6 @@
 
 namespace gtsam
 {
-
 /**
  * Non-linear factor for a constraint derived from a 2D measurement.
  * The calibration is known here.
