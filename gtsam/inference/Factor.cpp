@@ -23,30 +23,34 @@
 
 #include <gtsam/inference/Factor.h>
 
-namespace gtsam {
+namespace gtsam
+{
 
-  /* ************************************************************************* */
-  void Factor::print(const std::string& s, const KeyFormatter& formatter) const
-  {
+/* ************************************************************************* */
+void Factor::print(const std::string& s, const KeyFormatter& formatter) const
+{
     return this->printKeys(s, formatter);
-  }
-
-  /* ************************************************************************* */
-  void Factor::printKeys(const std::string& s, const KeyFormatter& formatter) const {
-    std::cout << (s.empty() ? "" : s + " ");
-    for (Key key : keys_) std::cout << " " << formatter(key);
-    std::cout << std::endl;
-  }
-
-  /* ************************************************************************* */
-  bool Factor::equals(const This& other, double tol) const {
-    return keys_ == other.keys_;
-  }
-
-  /* ************************************************************************* */
-  double Factor::error(const HybridValues& c) const {
-    throw std::runtime_error("Factor::error is not implemented");
-  }
-
-
 }
+
+/* ************************************************************************* */
+void Factor::printKeys(const std::string& s, const KeyFormatter& formatter) const
+{
+    std::cout << (s.empty() ? "" : s + " ");
+    for (Key key : keys_)
+        std::cout << " " << formatter(key);
+    std::cout << std::endl;
+}
+
+/* ************************************************************************* */
+bool Factor::equals(const This& other, double tol) const
+{
+    return keys_ == other.keys_;
+}
+
+/* ************************************************************************* */
+double Factor::error(const HybridValues& c) const
+{
+    throw std::runtime_error("Factor::error is not implemented");
+}
+
+}  // namespace gtsam

@@ -11,3 +11,5 @@ gtsamAddExamplesGlob("self_test_incremental_fixed_lag_smoother.cpp" "${excluded_
 gtsamAddExamplesGlob("self_test_basic_data_struct.cpp" "${excluded_examples}" "gtsam;gtsam_unstable;${Boost_PROGRAM_OPTIONS_LIBRARY}")
 gtsamAddExamplesGlob("VisualISAMExample.cpp" "${excluded_examples}" "gtsam;gtsam_unstable;${Boost_PROGRAM_OPTIONS_LIBRARY}")
 gtsamAddExamplesGlob("VisualISAM2Example.cpp" "${excluded_examples}" "gtsam;gtsam_unstable;${Boost_PROGRAM_OPTIONS_LIBRARY}")
+
+add_subdirectory(self_test)

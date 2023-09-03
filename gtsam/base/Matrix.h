@@ -410,9 +410,9 @@ GTSAM_EXPORT Matrix collect(size_t nrMatrices, ...);
  * (Vector, Matrix) scales the rows
  * @param inf_mask when true, will not scale with a NaN or inf value.
  */
-GTSAM_EXPORT void vector_scale_inplace(const Vector& v, Matrix& A, bool inf_mask = false);  // row
-GTSAM_EXPORT Matrix vector_scale(const Vector& v, const Matrix& A, bool inf_mask = false);  // row
-GTSAM_EXPORT Matrix vector_scale(const Matrix& A, const Vector& v, bool inf_mask = false);  // column
+GTSAM_EXPORT void   vector_scale_inplace(const Vector& v, Matrix& A, bool inf_mask = false);  // row
+GTSAM_EXPORT Matrix vector_scale(const Vector& v, const Matrix& A, bool inf_mask = false);    // row
+GTSAM_EXPORT Matrix vector_scale(const Matrix& A, const Vector& v, bool inf_mask = false);    // column
 
 /**
  * skew symmetric matrix returns this:
