@@ -1,0 +1,7 @@
+digraph G{
+0[label="X3, X4"];
+0->1
+1[label="X2 : X3"];
+1->2
+2[label="X1 : X2"];
+}
