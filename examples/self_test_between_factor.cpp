@@ -121,8 +121,8 @@ int main()
     Pose3PriorFactor   self_prior_factor(X1, wTb1.expmap(noise), noise_model);
     gtsam::PriorFactor<gtsam::Pose3> sys_prior_factor(X1, wTb1.expmap(noise), noise_model);
     gtsam::NonlinearFactorGraph      factor_graph;
-    factor_graph.add(self_pose3_between_factor);
     factor_graph.add(self_prior_factor);
+    factor_graph.add(self_pose3_between_factor);
 
     // initial values
     gtsam::Values values;
