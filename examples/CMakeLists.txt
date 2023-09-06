@@ -1,5 +1,5 @@
 set (excluded_examples
-    elaboratePoint2KalmanFilter.cpp
+    #elaboratePoint2KalmanFilter.cpp
 )
 
 

@@ -32,7 +32,6 @@
 
 namespace gtsam
 {
-
 // Forward declarations
 class Values;
 class Ordering;
@@ -100,11 +99,10 @@ public:
                const KeyFormatter& keyFormatter = DefaultKeyFormatter) const override;
 
     /** print errors along with factors*/
-    void printErrors(
-        const Values&      values,
-        const std::string& str = "NonlinearFactorGraph: ", const KeyFormatter& keyFormatter = DefaultKeyFormatter,
-        const std::function<bool(const Factor* /*factor*/, double /*whitenedError*/, size_t /*index*/)>&
-            printCondition = [](const Factor*, double, size_t) { return true; }) const;
+    void printErrors(const Values& values, const std::string& str = "NonlinearFactorGraph: ",
+                     const KeyFormatter& keyFormatter = DefaultKeyFormatter,
+                     const std::function<bool(const Factor* /*factor*/, double /*whitenedError*/, size_t /*index*/)>&
+                         printCondition = [](const Factor*, double, size_t) { return true; }) const;
 
     /** Test equality */
     bool equals(const NonlinearFactorGraph& other, double tol = 1e-9) const;
