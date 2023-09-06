@@ -1,0 +1,18 @@
+graph {
+  size="5,5";
+
+  var6341068275337658369[label="X1"];
+  var6341068275337658370[label="X2"];
+  var6341068275337658371[label="X3"];
+
+  factor0[label="", shape=point];
+  var6341068275337658369--factor0;
+  factor1[label="", shape=point];
+  var6341068275337658370--factor1;
+  factor2[label="", shape=point];
+  var6341068275337658369--factor2;
+  var6341068275337658370--factor2;
+  factor3[label="", shape=point];
+  var6341068275337658370--factor3;
+  var6341068275337658371--factor3;
+}
