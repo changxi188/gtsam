@@ -17,47 +17,51 @@
 
 #include <boost/make_shared.hpp>
 
-#include <gtsam/inference/FactorGraph-inst.h>
 #include <gtsam/inference/EliminateableFactorGraph-inst.h>
-#include <gtsam/symbolic/SymbolicFactorGraph.h>
-#include <gtsam/symbolic/SymbolicEliminationTree.h>
-#include <gtsam/symbolic/SymbolicJunctionTree.h>
+#include <gtsam/inference/FactorGraph-inst.h>
 #include <gtsam/symbolic/SymbolicBayesTree.h>
 #include <gtsam/symbolic/SymbolicConditional.h>
+#include <gtsam/symbolic/SymbolicEliminationTree.h>
+#include <gtsam/symbolic/SymbolicFactorGraph.h>
+#include <gtsam/symbolic/SymbolicJunctionTree.h>
 
-namespace gtsam {
+namespace gtsam
+{
+// Instantiate base classes
+template class FactorGraph<SymbolicFactor>;
+template class EliminateableFactorGraph<SymbolicFactorGraph>;
 
-  // Instantiate base classes
-  template class FactorGraph<SymbolicFactor>;
-  template class EliminateableFactorGraph<SymbolicFactorGraph>;
+using namespace std;
 
-  using namespace std;
-
-  /* ************************************************************************* */
-  bool SymbolicFactorGraph::equals(const This& fg, double tol) const
-  {
+/* ************************************************************************* */
+bool SymbolicFactorGraph::equals(const This& fg, double tol) const
+{
     return Base::equals(fg, tol);
-  }
-
-  /* ************************************************************************* */
-  void SymbolicFactorGraph::push_factor(Key key) {
-    push_back(boost::make_shared<SymbolicFactor>(key));
-  }
-
-  /* ************************************************************************* */
-  void SymbolicFactorGraph::push_factor(Key key1, Key key2) {
-    push_back(boost::make_shared<SymbolicFactor>(key1,key2));
-  }
-
-  /* ************************************************************************* */
-  void SymbolicFactorGraph::push_factor(Key key1, Key key2, Key key3) {
-    push_back(boost::make_shared<SymbolicFactor>(key1,key2,key3));
-  }
-
-  /* ************************************************************************* */
-  void SymbolicFactorGraph::push_factor(Key key1, Key key2, Key key3, Key key4) {
-    push_back(boost::make_shared<SymbolicFactor>(key1,key2,key3,key4));
-  }
-
-  /* ************************************************************************* */
 }
+
+/* ************************************************************************* */
+void SymbolicFactorGraph::push_factor(Key key)
+{
+    push_back(boost::make_shared<SymbolicFactor>(key));
+}
+
+/* ************************************************************************* */
+void SymbolicFactorGraph::push_factor(Key key1, Key key2)
+{
+    push_back(boost::make_shared<SymbolicFactor>(key1, key2));
+}
+
+/* ************************************************************************* */
+void SymbolicFactorGraph::push_factor(Key key1, Key key2, Key key3)
+{
+    push_back(boost::make_shared<SymbolicFactor>(key1, key2, key3));
+}
+
+/* ************************************************************************* */
+void SymbolicFactorGraph::push_factor(Key key1, Key key2, Key key3, Key key4)
+{
+    push_back(boost::make_shared<SymbolicFactor>(key1, key2, key3, key4));
+}
+
+/* ************************************************************************* */
+}  // namespace gtsam

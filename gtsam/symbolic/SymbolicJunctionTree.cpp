@@ -17,18 +17,18 @@
  */
 
 #include <gtsam/inference/JunctionTree-inst.h>
-#include <gtsam/symbolic/SymbolicJunctionTree.h>
 #include <gtsam/symbolic/SymbolicEliminationTree.h>
+#include <gtsam/symbolic/SymbolicJunctionTree.h>
 
-namespace gtsam {
+namespace gtsam
+{
+// Instantiate base class
+template class EliminatableClusterTree<SymbolicBayesTree, SymbolicFactorGraph>;
+template class JunctionTree<SymbolicBayesTree, SymbolicFactorGraph>;
 
-  // Instantiate base class
-  template class EliminatableClusterTree<SymbolicBayesTree, SymbolicFactorGraph>;
-  template class JunctionTree<SymbolicBayesTree, SymbolicFactorGraph>;
-
-  /* ************************************************************************* */
-  SymbolicJunctionTree::SymbolicJunctionTree(
-    const SymbolicEliminationTree& eliminationTree) :
-  Base(eliminationTree) {}
-
+/* ************************************************************************* */
+SymbolicJunctionTree::SymbolicJunctionTree(const SymbolicEliminationTree& eliminationTree) : Base(eliminationTree)
+{
 }
+
+}  // namespace gtsam
