@@ -14,19 +14,21 @@
 #ifdef COMPILE_ERROR_NOT_IMPLEMENTED
 
 #include <boost/static_assert.hpp>
-#define CONCEPT_NOT_IMPLEMENTED BOOST_STATIC_ASSERT_MSG(boost::false_type, \
-"This method is required by the new concepts framework but has not been implemented yet.");
+#define CONCEPT_NOT_IMPLEMENTED                                                                                        \
+    BOOST_STATIC_ASSERT_MSG(                                                                                           \
+        boost::false_type, "This method is required by the new concepts framework but has not been implemented yet.");
 
 #else
 
 #include <exception>
-#define CONCEPT_NOT_IMPLEMENTED \
-  throw std::runtime_error("This method is required by the new concepts framework but has not been implemented yet.");
+#define CONCEPT_NOT_IMPLEMENTED                                                                                        \
+    throw std::runtime_error("This method is required by the new concepts framework but has not been implemented "     \
+                             "yet.");
 
 #endif
 
-namespace gtsam {
-
-template <typename T> struct traits;
-
+namespace gtsam
+{
+template <typename T>
+struct traits;
 }

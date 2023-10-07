@@ -23,54 +23,65 @@
 #include <cassert>
 #include <iostream>  // for cout :-(
 
-namespace gtsam {
-
+namespace gtsam
+{
 /// Cyclic group of order N
-template<size_t N>
-class Cyclic {
-  size_t i_; ///< we just use an unsigned int
+template <size_t N>
+class Cyclic
+{
+    size_t i_;  ///< we just use an unsigned int
 public:
-  /// Constructor
-  Cyclic(size_t i) :
-      i_(i) {
-    assert(i < N);
-  }
-  /// Default constructor yields identity
-  Cyclic():i_(0) {
-  }
-  static Cyclic Identity() { return Cyclic();}
+    /// Constructor
+    Cyclic(size_t i) : i_(i)
+    {
+        assert(i < N);
+    }
+    /// Default constructor yields identity
+    Cyclic() : i_(0)
+    {
+    }
+    static Cyclic Identity()
+    {
+        return Cyclic();
+    }
 
-  /// Cast to size_t
-  operator size_t() const {
-    return i_;
-  }
-  /// Addition modulo N
-  Cyclic operator+(const Cyclic& h) const {
-    return (i_ + h.i_) % N;
-  }
-  /// Subtraction modulo N
-  Cyclic operator-(const Cyclic& h) const {
-    return (N + i_ - h.i_) % N;
-  }
-  /// Inverse
-  Cyclic operator-() const {
-    return (N - i_) % N;
-  }
-  /// print with optional string
-  void print(const std::string& s = "") const {
-    std::cout << s << i_ << std::endl;
-  }
-  /// equals with an tolerance, prints out message if unequal
-  bool equals(const Cyclic& other, double tol = 1e-9) const {
-    return other.i_ == i_;
-  }
+    /// Cast to size_t
+    operator size_t() const
+    {
+        return i_;
+    }
+    /// Addition modulo N
+    Cyclic operator+(const Cyclic& h) const
+    {
+        return (i_ + h.i_) % N;
+    }
+    /// Subtraction modulo N
+    Cyclic operator-(const Cyclic& h) const
+    {
+        return (N + i_ - h.i_) % N;
+    }
+    /// Inverse
+    Cyclic operator-() const
+    {
+        return (N - i_) % N;
+    }
+    /// print with optional string
+    void print(const std::string& s = "") const
+    {
+        std::cout << s << i_ << std::endl;
+    }
+    /// equals with an tolerance, prints out message if unequal
+    bool equals(const Cyclic& other, double tol = 1e-9) const
+    {
+        return other.i_ == i_;
+    }
 };
 
 /// Define cyclic group to be a model of the Additive Group concept
-template<size_t N>
-struct traits<Cyclic<N> > : internal::AdditiveGroupTraits<Cyclic<N> >, //
-    Testable<Cyclic<N> > {
+template <size_t N>
+struct traits<Cyclic<N> > : internal::AdditiveGroupTraits<Cyclic<N> >,  //
+                            Testable<Cyclic<N> >
+{
 };
 
-} // \namespace gtsam
-
+}  // namespace gtsam

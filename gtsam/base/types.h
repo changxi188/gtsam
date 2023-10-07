@@ -87,7 +87,6 @@
 
 namespace gtsam
 {
-
 /// Function to demangle type name of variable, e.g. demangle(typeid(x).name())
 std::string GTSAM_EXPORT demangle(const char* name);
 
@@ -319,7 +318,6 @@ inline int isinf(T a)
 
 namespace gtsam
 {
-
 /// Convenience void_t as we assume C++11, it will not conflict the std one in C++17 as this is in `gtsam::`
 template <typename...>
 using void_t = void;
